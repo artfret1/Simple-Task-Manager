@@ -110,7 +110,9 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                       elevation: 10,
                     ),
-                    onPressed: isLoading ? null : () => Get.to(CreateScreen()),
+                    onPressed: isLoading
+                        ? null
+                        : () => Get.offAll(CreateScreen()),
                     child: Text('Register now'),
                   ),
                   Text('OR'),
