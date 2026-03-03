@@ -10,7 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:task_manager/repositories/bloc/family_bloc.dart';
 
 class CreateScreen extends StatefulWidget {
-  const CreateScreen({Key? key}) : super(key: key);
+  const CreateScreen({super.key});
 
   @override
   State<CreateScreen> createState() => _CreateScreenState();
@@ -364,6 +364,9 @@ class _CreateScreenState extends State<CreateScreen> {
 
   void _createStoreDocument(User user) async {
     final data = {
+      'name': user.email?.split('@').first ?? 'Unknown',
+      'lvl': 1,
+      'coins': 0,
       'email': user.email ?? 'Unknown email',
       if (_firstNameController.text.isNotEmpty)
         'first_name': _firstNameController.text,

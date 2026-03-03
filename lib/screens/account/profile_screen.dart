@@ -1,12 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:task_manager/repositories/auth/user_router.dart';
 import 'package:task_manager/repositories/bloc/auth_bloc.dart';
-import 'package:task_manager/screens/account/create_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:intl/intl.dart';
+import 'package:task_manager/repositories/models/member.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -21,61 +23,110 @@ class ProfileScreen extends StatelessWidget {
           builder: (context, state) {
             final user = FirebaseAuth.instance.currentUser;
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const CircleAvatar(
-                  radius: 50,
-                  backgroundImage: AssetImage('assets/img/defoult-avatar.png'),
-                ),
-                const SizedBox(height: 40),
+            final Member initialMember = Member(
+              lvl: 1,
+              coins: 0,
+              name: getUsername(user),
+              email: user?.email,
+            );
 
-                /// USERNAME
-                Text(
-                  getUsername(user),
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
+            return FutureBuilder<Member>(
+              future: user != null
+                  ? getDetails(user.uid, initialMember)
+                  : Future.value(initialMember),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-                const SizedBox(height: 10),
+                final member = snapshot.data ?? initialMember;
 
-                const Text('User UID:', style: TextStyle(color: Colors.grey)),
-                _UidWidget(uid: getUid(user)),
-
-                const SizedBox(height: 10),
-
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text('Level: 1', style: TextStyle(fontSize: 18)),
-                    Text('Coins: 0', style: TextStyle(fontSize: 18)),
-                  ],
-                ),
-
-                const SizedBox(height: 60),
-
-                GestureDetector(
-                  onTap: () {},
-                  child: Text(
-                    'Add profile details',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Theme.of(context).colorScheme.primary,
-                      decoration: TextDecoration.underline,
+                    const CircleAvatar(
+                      radius: 50,
+                      backgroundImage: AssetImage(
+                        'assets/img/defoult-avatar.png',
+                      ),
                     ),
-                  ),
-                ),
+                    const SizedBox(height: 40),
 
-                const Spacer(),
+                    Text(
+                      member.getName ?? getUsername(user),
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
 
-                _LogoutButton(
-                  isLoading: state is AuthLoading,
-                  isAnonymous: user?.isAnonymous ?? false,
-                ),
-              ],
+                    const SizedBox(height: 10),
+
+                    const Text(
+                      'User UID:',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                    _UidWidget(uid: getUid(user)),
+
+                    const SizedBox(height: 10),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text(
+                          'Level: ${member.lvl}',
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                        Text(
+                          'Coins: ${member.coins}',
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(member.firstName ?? ''),
+                            const SizedBox(width: 8),
+                            Text(member.secondName ?? ''),
+                          ],
+                        ),
+
+                        const SizedBox(height: 8),
+                        Text('Email: ${member.email ?? 'not set'}'),
+                        Text('Birthday: ${member.birthday ?? 'not set'}'),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+                    GestureDetector(
+                      onTap: () {},
+                      child: Text(
+                        'Add profile details',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Theme.of(context).colorScheme.primary,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+
+                    const Spacer(),
+
+                    _LogoutButton(
+                      isLoading: state is AuthLoading,
+                      isAnonymous: user?.isAnonymous ?? false,
+                    ),
+                  ],
+                );
+              },
             );
           },
         ),
@@ -148,3 +199,31 @@ String getUsername(User? user) {
 }
 
 String getUid(User? user) => user?.uid ?? 'Not available';
+
+Future<Member> getDetails(uid, Member currentMember) async {
+  DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(uid)
+      .get();
+
+  if (documentSnapshot.exists) {
+    currentMember.name = documentSnapshot.get('name') ?? currentMember.name;
+    currentMember.lvl = documentSnapshot.get('lvl') ?? currentMember.lvl;
+    currentMember.coins = documentSnapshot.get('coins') ?? currentMember.coins;
+    currentMember.firstName = documentSnapshot.get('first_name');
+    currentMember.secondName = documentSnapshot.get('last_name');
+    currentMember.email = documentSnapshot.get('email') ?? currentMember.email;
+
+    // Convert Timestamp to String with format DD.MM.YYYY
+    final birthdayValue = documentSnapshot.get('BirthDay');
+    if (birthdayValue != null) {
+      if (birthdayValue is Timestamp) {
+        final date = birthdayValue.toDate();
+        currentMember.birthday = DateFormat('dd.MM.yyyy').format(date);
+      } else {
+        currentMember.birthday = birthdayValue.toString();
+      }
+    }
+  }
+  return currentMember;
+}
