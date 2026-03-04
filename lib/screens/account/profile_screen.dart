@@ -10,8 +10,70 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:intl/intl.dart';
 import 'package:task_manager/repositories/models/member.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  bool _editing = false;
+
+  final _emailController = TextEditingController();
+
+  final _firstNameController = TextEditingController();
+
+  final _secondNameController = TextEditingController();
+
+  final _birthdayController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _firstNameController.dispose();
+    _secondNameController.dispose();
+    _birthdayController.dispose();
+    super.dispose();
+  }
+
+  /// сравнивает контроллеры с данными и сохраняет только изменённые поля
+  Future<void> _saveProfileChanges(Member member) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final docRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+    final updates = <String, dynamic>{};
+
+    if (_firstNameController.text.isNotEmpty &&
+        _firstNameController.text != member.firstName) {
+      updates['first_name'] = _firstNameController.text;
+    }
+    if (_secondNameController.text.isNotEmpty &&
+        _secondNameController.text != member.secondName) {
+      updates['last_name'] = _secondNameController.text;
+    }
+    if (_emailController.text.isNotEmpty &&
+        _emailController.text != member.email) {
+      updates['email'] = _emailController.text;
+    }
+    if (_birthdayController.text.isNotEmpty &&
+        _birthdayController.text != member.birthday) {
+      updates['BirthDay'] = _birthdayController.text;
+    }
+
+    if (updates.isNotEmpty) {
+      await docRef.update(updates);
+    }
+
+    setState(() {
+      _editing = false;
+      _emailController.clear();
+      _firstNameController.clear();
+      _secondNameController.clear();
+      _birthdayController.clear();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +115,7 @@ class ProfileScreen extends StatelessWidget {
                     const SizedBox(height: 40),
 
                     Text(
-                      member.getName ?? getUsername(user),
+                      initialMember.name,
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -87,36 +149,168 @@ class ProfileScreen extends StatelessWidget {
 
                     const SizedBox(height: 20),
 
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(member.firstName ?? ''),
-                            const SizedBox(width: 8),
-                            Text(member.secondName ?? ''),
-                          ],
-                        ),
+                    !_editing
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(member.firstName ?? ''),
+                                  const SizedBox(width: 8),
+                                  Text(member.secondName ?? ''),
+                                ],
+                              ),
 
-                        const SizedBox(height: 8),
-                        Text('Email: ${member.email ?? 'not set'}'),
-                        Text('Birthday: ${member.birthday ?? 'not set'}'),
-                      ],
-                    ),
+                              const SizedBox(height: 8),
+                              Text('Email: ${member.email ?? 'not set'}'),
+                              Text('Birthday: ${member.birthday ?? 'not set'}'),
+                            ],
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextFormField(
+                                controller: _firstNameController,
+                                decoration: InputDecoration(
+                                  hintText: 'Enter your first name',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 8),
+
+                              TextFormField(
+                                controller: _secondNameController,
+                                decoration: InputDecoration(
+                                  hintText: 'Enter your last name',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(height: 8),
+                              TextFormField(
+                                controller: _emailController,
+                                decoration: InputDecoration(
+                                  hintText: 'Enter your email',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                ),
+                              ),
+                              TextFormField(
+                                controller: _birthdayController,
+                                decoration: InputDecoration(
+                                  hintText: 'Choose your birthday',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                ),
+                                onTap: () async {
+                                  DateTime? pickedDate = await showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime(2000),
+                                    lastDate: DateTime(2100),
+                                  );
+
+                                  if (pickedDate != null) {
+                                    setState(() {
+                                      _birthdayController.text = DateFormat(
+                                        'dd.MM.yyyy',
+                                      ).format(pickedDate);
+                                    });
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
 
                     const SizedBox(height: 20),
-                    GestureDetector(
-                      onTap: () {},
-                      child: Text(
-                        'Add profile details',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Theme.of(context).colorScheme.primary,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ),
+                    !_editing
+                        ? GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _editing = true;
+                                _emailController.text = member.email ?? '';
+                                _firstNameController.text =
+                                    member.firstName ?? '';
+                                _secondNameController.text =
+                                    member.secondName ?? '';
+                                _birthdayController.text =
+                                    member.birthday ?? '';
+                              });
+                            },
+                            child: Text(
+                              'Edit profile details',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Theme.of(context).colorScheme.primary,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _editing = false;
+                                    _emailController.clear();
+                                    _firstNameController.clear();
+                                    _secondNameController.clear();
+                                    _birthdayController.clear();
+                                  });
+                                },
+                                child: Text(
+                                  'Cancel',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 24),
+                              GestureDetector(
+                                onTap: () async {
+                                  await _saveProfileChanges(member);
+                                },
+                                child: Text(
+                                  'Save',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
 
                     const Spacer(),
 

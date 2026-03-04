@@ -16,5 +16,5 @@ class Member {
   String? birthday;
   String name;
 
-  String? get getName => firstName != null ? "$firstName $secondName" : email;
+  String? get getName => firstName != null ? "$firstName $secondName" : null;
 }
