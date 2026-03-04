@@ -1,5 +1,5 @@
 import 'package:task_manager/repositories/bloc/family_bloc.dart';
-import 'package:task_manager/repositories/widgets/add_member_field.dart';
+import 'package:task_manager/repositories/widgets/add_member_dialog.dart';
 import 'package:task_manager/repositories/widgets/member_card.dart';
 import 'package:task_manager/screens/account/profile_screen.dart';
 import 'package:task_manager/screens/settings/settings_screen.dart';

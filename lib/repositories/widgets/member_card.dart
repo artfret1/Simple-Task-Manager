@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:task_manager/repositories/bloc/family_bloc.dart';
 import 'package:task_manager/repositories/models/member.dart';
 import 'package:task_manager/repositories/widgets/edit_member_dialog.dart';
@@ -17,7 +18,13 @@ class MemberCard extends StatelessWidget {
   final int coins;
   @override
   Widget build(BuildContext context) {
-    final member = Member(name: name, lvl: lvl, coins: coins);
+    final user = FirebaseAuth.instance.currentUser;
+    final member = Member(
+      uid: getUid(user),
+      name: name,
+      lvl: lvl,
+      coins: coins,
+    );
     return Card(
       color: Color.fromARGB(255, 35, 61, 133),
       child: Padding(
@@ -44,8 +51,8 @@ class MemberCard extends StatelessWidget {
                           ),
                           editing
                               ? GestureDetector(
-                                  onTap: () =>
-                                      showEditMemberDialog(context, member),
+                                  onTap: () => {},
+                                  // showEditMemberDialog(context, member),
                                   child: Icon(
                                     Icons.edit,
                                     size: 16,
@@ -141,4 +148,6 @@ class MemberCard extends StatelessWidget {
       ),
     );
   }
+
+  String getUid(User? user) => user?.uid ?? 'Not available';
 }

@@ -95,6 +95,7 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
       final updatedMembers = currentState.members.map((member) {
         if (member.name == event.memberName) {
           return Member(
+            uid: member.uid,
             name: member.name,
             lvl: member.lvl + 1,
             coins: member.coins,
@@ -121,6 +122,7 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
       final updatedMembers = currentState.members.map((member) {
         if (member.name == event.memberName) {
           return Member(
+            uid: member.uid,
             name: member.name,
             lvl: (member.lvl - 1) < 1 ? 1 : (member.lvl - 1),
             coins: member.coins,
@@ -147,6 +149,7 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
       final updatedMembers = currentState.members.map((member) {
         if (member.name == event.memberName) {
           return Member(
+            uid: member.uid,
             name: member.name,
             lvl: member.lvl,
             coins: member.coins + 1,
@@ -173,6 +176,7 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
       final updatedMembers = currentState.members.map((member) {
         if (member.name == event.memberName) {
           return Member(
+            uid: member.uid,
             name: member.name,
             lvl: member.lvl,
             coins: (member.coins - 1) < 0 ? 0 : (member.coins - 1),

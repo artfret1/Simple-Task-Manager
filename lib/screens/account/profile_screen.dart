@@ -86,6 +86,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             final user = FirebaseAuth.instance.currentUser;
 
             final Member initialMember = Member(
+              uid: getUid(user),
               lvl: 1,
               coins: 0,
               name: getUsername(user),
