@@ -1,15 +1,16 @@
-import 'package:task_manager/repositories/bloc/family_bloc.dart';
+import 'package:task_manager/repositories/bloc/family/family_bloc.dart';
 import 'package:task_manager/repositories/widgets/add_member_dialog.dart';
 import 'package:task_manager/repositories/widgets/member_card.dart';
 import 'package:task_manager/screens/account/profile_screen.dart';
+import 'package:task_manager/screens/group_screen/choose_group_screen.dart';
 import 'package:task_manager/screens/settings/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 
-class MainScreen extends StatelessWidget {
-  const MainScreen({super.key});
+class GroupScreen extends StatelessWidget {
+  const GroupScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +35,12 @@ class MainScreen extends StatelessWidget {
             ),
           ),
         ],
-        title: Center(child: Text('Group')),
+        title: Center(
+          child: GestureDetector(
+            child: Text('Группа 202'),
+            onTap: () => Get.to(ChooseGroupScreen()),
+          ),
+        ),
         surfaceTintColor: Theme.of(context).appBarTheme.backgroundColor,
       ),
       body: BlocListener<FamilyBloc, FamilyState>(

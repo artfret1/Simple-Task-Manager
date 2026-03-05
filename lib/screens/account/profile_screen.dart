@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:task_manager/repositories/auth/user_router.dart';
-import 'package:task_manager/repositories/bloc/auth_bloc.dart';
+import 'package:task_manager/repositories/bloc/auth/auth_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

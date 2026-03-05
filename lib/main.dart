@@ -1,6 +1,7 @@
 import 'package:task_manager/repositories/auth/user_router.dart';
-import 'package:task_manager/repositories/bloc/auth_bloc.dart';
-import 'package:task_manager/repositories/bloc/family_bloc.dart';
+import 'package:task_manager/repositories/bloc/auth/auth_bloc.dart';
+import 'package:task_manager/repositories/bloc/family/family_bloc.dart';
+import 'package:task_manager/repositories/bloc/groups/group_bloc.dart';
 import 'package:task_manager/repositories/theme/theme_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -25,6 +26,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         BlocProvider<FamilyBloc>(create: (_) => FamilyBloc()),
+        BlocProvider<GroupBloc>(create: (_) => GroupBloc()),
         BlocProvider<AuthBloc>(create: (_) => AuthBloc(FirebaseAuth.instance)),
       ],
       child: const MainApp(),

@@ -10,6 +10,12 @@ class AddMember extends FamilyEvent {
   AddMember(this.member);
 }
 
+class AddGroup extends FamilyEvent {
+  final String groupName;
+
+  AddGroup(this.groupName);
+}
+
 class UpdateMember extends FamilyEvent {
   final String oldName;
   final Member updatedMember;

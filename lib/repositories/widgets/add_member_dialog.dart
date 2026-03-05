@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:task_manager/repositories/bloc/family_bloc.dart';
+import 'package:task_manager/repositories/bloc/family/family_bloc.dart';
 import 'package:task_manager/repositories/models/member.dart';
 import 'package:task_manager/screens/account/profile_screen.dart';
 

@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:task_manager/repositories/bloc/family_bloc.dart';
+import 'package:task_manager/repositories/bloc/family/family_bloc.dart';
 import 'package:task_manager/repositories/models/member.dart';
 import 'package:task_manager/repositories/widgets/edit_member_dialog.dart';
 import 'package:flutter/material.dart';

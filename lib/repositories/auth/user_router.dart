@@ -1,5 +1,6 @@
 import 'package:task_manager/screens/account/auth_screen.dart';
-import 'package:task_manager/screens/group_screen/main_screen.dart';
+import 'package:task_manager/screens/group_screen/choose_group_screen.dart';
+import 'package:task_manager/screens/group_screen/group_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +13,7 @@ class UserRouter extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return const MainScreen();
+          return const ChooseGroupScreen();
         }
         return const AuthScreen();
       },
