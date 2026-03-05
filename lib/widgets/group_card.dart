@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:task_manager/repositories/models/group.dart';
+import 'package:task_manager/models/group.dart';
 import 'package:task_manager/screens/group_screen/group_screen.dart';
 
 class GroupCard extends StatelessWidget {

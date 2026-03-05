@@ -1,10 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:task_manager/repositories/bloc/family/family_bloc.dart';
-import 'package:task_manager/repositories/models/member.dart';
-import 'package:task_manager/screens/account/profile_screen.dart';
+import 'package:task_manager/bloc/family/family_bloc.dart';
 
 void showFormDialog(BuildContext context) {
   showDialog(
@@ -25,8 +22,7 @@ class _AddMemberDialog extends StatefulWidget {
 class _AddMemberDialogState extends State<_AddMemberDialog> {
   final _uidController = TextEditingController();
   bool _uidFinding = false;
-  bool _nameFinding = false;
-  FirebaseFirestore db = FirebaseFirestore.instance;
+  final bool _nameFinding = false;
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -110,29 +106,14 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
                       ),
                       SizedBox(height: 10),
                       ElevatedButton(
-                        onPressed: () async {
-                          // Получаем Member из Firestore
-                          final member = await getDocumentData(
-                            "users",
-                            _uidController.text.trim(),
+                        onPressed: () {
+                          context.read<FamilyBloc>().add(
+                            AddMemberByUid(_uidController.text.trim()),
                           );
-
-                          if (member == null) {
-                            // Если пользователь не найден — показываем сообщение
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Пользователь не найден"),
-                              ),
-                            );
-                            return;
-                          }
-
-                          // Если найден — добавляем в BLoC
-                          context.read<FamilyBloc>().add(AddMember(member));
 
                           Navigator.pop(context);
                         },
-                        child: const Text('Найти'),
+                        child: const Text('Добавить'),
                       ),
                       GestureDetector(
                         onTap: () => setState(() {
@@ -167,24 +148,5 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
         ),
       ),
     );
-  }
-
-  Future<Member?> getDocumentData(
-    String collectionName,
-    String documentId,
-  ) async {
-    final docRef = db.collection(collectionName).doc(documentId);
-    final docSnap = await docRef.get();
-
-    if (docSnap.exists) {
-      return Member(
-        uid: documentId,
-        lvl: docSnap["lvl"],
-        coins: docSnap["coins"],
-        name: docSnap["name"],
-      );
-    } else {
-      return null;
-    }
   }
 }

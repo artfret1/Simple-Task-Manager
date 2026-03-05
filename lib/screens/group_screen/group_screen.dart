@@ -1,6 +1,9 @@
-import 'package:task_manager/repositories/bloc/family/family_bloc.dart';
-import 'package:task_manager/repositories/widgets/add_member_dialog.dart';
-import 'package:task_manager/repositories/widgets/member_card.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:task_manager/bloc/family/family_bloc.dart';
+import 'package:task_manager/models/member.dart';
+import 'package:task_manager/repositories/family_repository.dart';
+import 'package:task_manager/widgets/add_member_dialog.dart';
+import 'package:task_manager/widgets/member_card.dart';
 import 'package:task_manager/screens/account/profile_screen.dart';
 import 'package:task_manager/screens/group_screen/choose_group_screen.dart';
 import 'package:task_manager/screens/settings/settings_screen.dart';
@@ -8,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
-import 'package:task_manager/repositories/models/group.dart';
+import 'package:task_manager/models/group.dart';
 
 class GroupScreen extends StatelessWidget {
   final Group group;
@@ -18,7 +21,9 @@ class GroupScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => FamilyBloc()..add(LoadFamily(group.id)),
+      create: (context) =>
+          FamilyBloc(context.read<FamilyRepository>())
+            ..add(LoadFamily(group.id)),
       child: _GroupView(group: group),
     );
   }
@@ -26,11 +31,12 @@ class GroupScreen extends StatelessWidget {
 
 class _GroupView extends StatelessWidget {
   const _GroupView({required this.group});
-
   final Group group;
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final isAdmin = currentUser?.uid == group.admin;
     return Scaffold(
       appBar: AppBar(
         leading: GestureDetector(
@@ -96,6 +102,7 @@ class _GroupView extends StatelessWidget {
                       name: member.name,
                       lvl: member.lvl,
                       coins: member.coins,
+                      isAdmin: isAdmin,
                     );
                   },
                 ),
@@ -115,6 +122,12 @@ class _GroupView extends StatelessWidget {
 
         child: Icon(Icons.add, color: Colors.black),
       ),
+    );
+  }
+
+  void increaseLvl(BuildContext context, Member member) {
+    context.read<FamilyBloc>().add(
+      UpdateMember(member.copyWith(lvl: member.lvl + 1)),
     );
   }
 }

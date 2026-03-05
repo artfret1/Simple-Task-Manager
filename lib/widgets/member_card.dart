@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:task_manager/repositories/bloc/family/family_bloc.dart';
-import 'package:task_manager/repositories/models/member.dart';
-import 'package:task_manager/repositories/widgets/edit_member_dialog.dart';
+import 'package:task_manager/bloc/family/family_bloc.dart';
+import 'package:task_manager/models/member.dart';
+import 'package:task_manager/widgets/edit_member_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,11 +11,13 @@ class MemberCard extends StatelessWidget {
     required this.name,
     required this.lvl,
     required this.coins,
+    required this.isAdmin,
   });
 
   final String name;
   final int lvl;
   final int coins;
+  final bool isAdmin;
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;

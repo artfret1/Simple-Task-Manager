@@ -8,10 +8,10 @@ class LoadFamily extends FamilyEvent {
   LoadFamily(this.groupId);
 }
 
-class AddMember extends FamilyEvent {
-  final Member member;
+class AddMemberByUid extends FamilyEvent {
+  final String uid;
 
-  AddMember(this.member);
+  AddMemberByUid(this.uid);
 }
 
 class AddGroup extends FamilyEvent {
@@ -21,10 +21,9 @@ class AddGroup extends FamilyEvent {
 }
 
 class UpdateMember extends FamilyEvent {
-  final String oldName;
   final Member updatedMember;
 
-  UpdateMember(this.oldName, this.updatedMember);
+  UpdateMember(this.updatedMember);
 }
 
 class DeleteMember extends FamilyEvent {

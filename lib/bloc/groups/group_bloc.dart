@@ -1,12 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:task_manager/repositories/models/group.dart';
+import 'package:task_manager/models/group.dart';
+import 'package:task_manager/repositories/group_repository.dart';
 
 part 'group_event.dart';
 part 'group_state.dart';
 
 class GroupBloc extends Bloc<GroupEvent, GroupState> {
-  GroupBloc() : super(GroupsInitial()) {
+  final GroupRepository repository;
+  GroupBloc(this.repository) : super(GroupsInitial()) {
     on<AddGroup>(_onAddGroup);
     on<LoadGroups>(_onLoadGroups);
   }
@@ -22,21 +23,8 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
   Future<void> _onLoadGroups(LoadGroups event, Emitter<GroupState> emit) async {
     emit(GroupsLoading());
 
-    FirebaseFirestore db = FirebaseFirestore.instance;
     try {
-      List<Group> groups = [];
-
-      QuerySnapshot querySnapshot = await db.collection("groups").get();
-
-      for (var doc in querySnapshot.docs) {
-        if (doc.data() != null && doc.data() is Map<String, dynamic>) {
-          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-
-          if (data.containsKey('name')) {
-            groups.add(Group(id: doc.id, name: data['name']));
-          }
-        }
-      }
+      final groups = await repository.getGroups();
       emit(GroupsLoaded(groups: groups));
     } catch (e) {
       emit(GroupsError('Failed to load groups'));
