@@ -8,9 +8,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:task_manager/repositories/models/group.dart';
 
 class GroupScreen extends StatelessWidget {
-  const GroupScreen({super.key});
+  final Group group;
+
+  const GroupScreen({super.key, required this.group});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => FamilyBloc()..add(LoadFamily(group.id)),
+      child: _GroupView(group: group),
+    );
+  }
+}
+
+class _GroupView extends StatelessWidget {
+  const _GroupView({required this.group});
+
+  final Group group;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +54,14 @@ class GroupScreen extends StatelessWidget {
         ],
         title: Center(
           child: GestureDetector(
-            child: Text('Группа 202'),
+            child: Row(
+              mainAxisAlignment: .center,
+              children: [
+                Text(group.name),
+                SizedBox(width: 5),
+                Icon(Icons.list, color: Colors.purple),
+              ],
+            ),
             onTap: () => Get.to(ChooseGroupScreen()),
           ),
         ),
@@ -53,11 +77,6 @@ class GroupScreen extends StatelessWidget {
         },
         child: BlocBuilder<FamilyBloc, FamilyState>(
           builder: (context, state) {
-            if (state is FamilyInitial) {
-              context.read<FamilyBloc>().add(LoadFamily());
-              return Center(child: CircularProgressIndicator());
-            }
-
             if (state is FamilyLoading) {
               return Center(child: CircularProgressIndicator());
             }
@@ -66,10 +85,10 @@ class GroupScreen extends StatelessWidget {
               if (state.members.isEmpty) {
                 return Center(child: Text('Добавьте первого члена семьи'));
               }
+
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: ListView.builder(
-                  shrinkWrap: true,
                   itemCount: state.members.length,
                   itemBuilder: (context, index) {
                     final member = state.members[index];

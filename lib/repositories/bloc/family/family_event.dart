@@ -2,7 +2,11 @@ part of 'family_bloc.dart';
 
 abstract class FamilyEvent {}
 
-class LoadFamily extends FamilyEvent {}
+class LoadFamily extends FamilyEvent {
+  final String groupId;
+
+  LoadFamily(this.groupId);
+}
 
 class AddMember extends FamilyEvent {
   final Member member;

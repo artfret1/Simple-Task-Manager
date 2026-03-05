@@ -2,18 +2,18 @@ part of 'group_bloc.dart';
 
 abstract class GroupState {}
 
-class GroupInitial extends GroupState {}
+class GroupsInitial extends GroupState {}
 
-class GroupLoading extends GroupState {}
+class GroupsLoading extends GroupState {}
 
-class GroupLoaded extends GroupState {
+class GroupsLoaded extends GroupState {
   final List<Group> groups;
 
-  GroupLoaded({required this.groups});
+  GroupsLoaded({required this.groups});
 }
 
-class GroupError extends GroupState {
+class GroupsError extends GroupState {
   final String message;
 
-  GroupError(this.message);
+  GroupsError(this.message);
 }

@@ -45,7 +45,7 @@ class _ChooseGroupScreenState extends State<ChooseGroupScreen> {
       ),
       body: BlocListener<GroupBloc, GroupState>(
         listener: (context, state) {
-          if (state is GroupError) {
+          if (state is GroupsError) {
             ScaffoldMessenger.of(
               context,
             ).showSnackBar(SnackBar(content: Text(state.message)));
@@ -53,16 +53,16 @@ class _ChooseGroupScreenState extends State<ChooseGroupScreen> {
         },
         child: BlocBuilder<GroupBloc, GroupState>(
           builder: (context, state) {
-            if (state is GroupInitial) {
+            if (state is GroupsInitial) {
               context.read<GroupBloc>().add(LoadGroups());
               return Center(child: CircularProgressIndicator());
             }
 
-            if (state is GroupLoading) {
+            if (state is GroupsLoading) {
               return Center(child: CircularProgressIndicator());
             }
 
-            if (state is GroupLoaded) {
+            if (state is GroupsLoaded) {
               if (state.groups.isEmpty) {
                 return Center(child: Text('Создайте свою первую группу'));
               }
@@ -73,7 +73,7 @@ class _ChooseGroupScreenState extends State<ChooseGroupScreen> {
                   itemCount: state.groups.length,
                   itemBuilder: (context, index) {
                     final group = state.groups[index];
-                    return GroupCard(name: group.name);
+                    return GroupCard(group: group);
                   },
                 ),
               );

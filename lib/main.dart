@@ -25,7 +25,6 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        BlocProvider<FamilyBloc>(create: (_) => FamilyBloc()),
         BlocProvider<GroupBloc>(create: (_) => GroupBloc()),
         BlocProvider<AuthBloc>(create: (_) => AuthBloc(FirebaseAuth.instance)),
       ],

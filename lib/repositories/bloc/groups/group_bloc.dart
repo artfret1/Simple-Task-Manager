@@ -6,21 +6,21 @@ part 'group_event.dart';
 part 'group_state.dart';
 
 class GroupBloc extends Bloc<GroupEvent, GroupState> {
-  GroupBloc() : super(GroupInitial()) {
+  GroupBloc() : super(GroupsInitial()) {
     on<AddGroup>(_onAddGroup);
     on<LoadGroups>(_onLoadGroups);
   }
 
   Future<void> _onAddGroup(AddGroup event, Emitter<GroupState> emit) async {
-    if (state is GroupLoaded) {
-      final currentState = state as GroupLoaded;
+    if (state is GroupsLoaded) {
+      final currentState = state as GroupsLoaded;
       final updatedGroups = [...currentState.groups];
-      emit(GroupLoaded(groups: updatedGroups));
+      emit(GroupsLoaded(groups: updatedGroups));
     }
   }
 
   Future<void> _onLoadGroups(LoadGroups event, Emitter<GroupState> emit) async {
-    emit(GroupLoading());
+    emit(GroupsLoading());
 
     FirebaseFirestore db = FirebaseFirestore.instance;
     try {
@@ -37,9 +37,9 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
           }
         }
       }
-      emit(GroupLoaded(groups: groups));
+      emit(GroupsLoaded(groups: groups));
     } catch (e) {
-      emit(GroupError('Failed to load groups'));
+      emit(GroupsError('Failed to load groups'));
     }
   }
 }

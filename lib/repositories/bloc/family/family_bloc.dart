@@ -22,10 +22,12 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
     Emitter<FamilyState> emit,
   ) async {
     emit(FamilyLoading());
+
     try {
-      emit(
-        FamilyLoaded(members: [], familyName: 'Family', editingMember: null),
-      );
+      String groupId = event.groupId;
+
+      // место для Firestore
+      emit(FamilyLoaded(members: [], familyName: groupId, editingMember: null));
     } catch (e) {
       emit(FamilyError('Failed to load family'));
     }
