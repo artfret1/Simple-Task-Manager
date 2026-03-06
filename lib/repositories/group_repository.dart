@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:task_manager/models/group.dart';
 
 class GroupRepository {
@@ -7,7 +8,12 @@ class GroupRepository {
   GroupRepository(this.firestore);
 
   Future<List<Group>> getGroups() async {
-    final snapshot = await firestore.collection('groups').get();
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final currentUserId = currentUser?.uid;
+    final snapshot = await firestore
+        .collection('groups')
+        .where('memberIds', arrayContains: currentUserId)
+        .get();
 
     return snapshot.docs.map((doc) {
       final membersMap = Map<String, dynamic>.from(doc['members'] ?? {});

@@ -7,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:intl/intl.dart';
-import 'package:task_manager/bloc/family/family_bloc.dart';
 
 class CreateScreen extends StatefulWidget {
   const CreateScreen({super.key});
@@ -259,41 +258,26 @@ class _CreateScreenState extends State<CreateScreen> {
                 const SizedBox(height: 32),
 
                 // CREATE ACCOUNT BUTTON
-                BlocListener<FamilyBloc, FamilyState>(
-                  listener: (context, state) {
-                    if (state is FamilyError) {
-                      ScaffoldMessenger.of(
-                        context,
-                      ).showSnackBar(SnackBar(content: Text(state.message)));
-                    }
-                  },
-                  child: BlocBuilder<FamilyBloc, FamilyState>(
-                    builder: (context, state) {
-                      if (state is FamilyLoading) {
-                        return Center(child: CircularProgressIndicator());
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        _handleRegistration();
                       }
-                      return SizedBox(
-                        width: double.infinity,
-                        height: 48,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              _handleRegistration();
-                            }
-                          },
-                          child: const Text(
-                            'Create Account',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      );
                     },
+                    child: const Text(
+                      'Create Account',
+                      style: TextStyle(fontSize: 16),
+                    ),
                   ),
                 ),
+
                 SizedBox(height: 10),
                 BlocBuilder<AuthBloc, AuthState>(
                   builder: (context, state) {
-                    return _createTOlog(
+                    return _CreateToLog(
                       isAnonymous: state.user?.isAnonymous ?? false,
                     );
                   },
@@ -378,9 +362,9 @@ class _CreateScreenState extends State<CreateScreen> {
   }
 }
 
-class _createTOlog extends StatelessWidget {
+class _CreateToLog extends StatelessWidget {
   final bool isAnonymous;
-  const _createTOlog({required this.isAnonymous});
+  const _CreateToLog({required this.isAnonymous});
 
   @override
   Widget build(BuildContext context) {
