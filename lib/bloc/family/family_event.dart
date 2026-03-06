@@ -33,31 +33,31 @@ class DeleteMember extends FamilyEvent {
 }
 
 class IncreaseLvl extends FamilyEvent {
-  final String memberName;
+  final String uid;
 
-  IncreaseLvl(this.memberName);
+  IncreaseLvl(this.uid);
 }
 
 class DecreaseLvl extends FamilyEvent {
-  final String memberName;
+  final String uid;
 
-  DecreaseLvl(this.memberName);
+  DecreaseLvl(this.uid);
 }
 
 class IncreaseCoins extends FamilyEvent {
-  final String memberName;
+  final String uid;
 
-  IncreaseCoins(this.memberName);
+  IncreaseCoins(this.uid);
 }
 
 class DecreaseCoins extends FamilyEvent {
-  final String memberName;
+  final String uid;
 
-  DecreaseCoins(this.memberName);
+  DecreaseCoins(this.uid);
 }
 
 class SetEditingMember extends FamilyEvent {
-  final String? memberName;
+  final String uid;
 
-  SetEditingMember(this.memberName);
+  SetEditingMember(this.uid);
 }

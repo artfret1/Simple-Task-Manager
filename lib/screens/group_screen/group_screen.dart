@@ -32,7 +32,6 @@ class GroupScreen extends StatelessWidget {
 class _GroupView extends StatelessWidget {
   const _GroupView({required this.group});
   final Group group;
-
   @override
   Widget build(BuildContext context) {
     final currentUser = FirebaseAuth.instance.currentUser;
@@ -99,9 +98,8 @@ class _GroupView extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final member = state.members[index];
                     return MemberCard(
-                      name: member.name,
-                      lvl: member.lvl,
-                      coins: member.coins,
+                      key: ValueKey(member.uid),
+                      member: member,
                       isAdmin: isAdmin,
                     );
                   },

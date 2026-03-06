@@ -15,6 +15,113 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
     on<AddMemberByUid>(_addMember);
     on<UpdateMember>(_onUpdateMember);
     on<DeleteMember>(_onDeleteMember);
+    on<IncreaseLvl>(_increaseLvl);
+    on<DecreaseLvl>(_decreaseLvl);
+    on<IncreaseCoins>(_increaseCoins);
+    on<DecreaseCoins>(_decreaseCoins);
+    on<SetEditingMember>(_setEditingMember);
+  }
+
+  void _setEditingMember(SetEditingMember event, Emitter<FamilyState> emit) {
+    if (state is! FamilyLoaded) return;
+
+    final current = state as FamilyLoaded;
+
+    emit(
+      FamilyLoaded(
+        members: current.members,
+        familyName: current.familyName,
+        editingMemberUid: event.uid,
+      ),
+    );
+  }
+
+  void _increaseLvl(IncreaseLvl event, Emitter<FamilyState> emit) {
+    if (state is! FamilyLoaded) return;
+
+    final current = state as FamilyLoaded;
+
+    final updatedMembers = current.members.map((m) {
+      if (m.uid == event.uid) {
+        return m.copyWith(lvl: m.lvl + 1);
+      }
+
+      return m;
+    }).toList();
+
+    emit(
+      FamilyLoaded(
+        members: updatedMembers,
+        familyName: current.familyName,
+        editingMemberUid: current.editingMemberUid,
+      ),
+    );
+  }
+
+  void _decreaseLvl(DecreaseLvl event, Emitter<FamilyState> emit) {
+    if (state is! FamilyLoaded) return;
+
+    final current = state as FamilyLoaded;
+
+    final updatedMembers = current.members.map((m) {
+      if (m.uid == event.uid && m.lvl > 0) {
+        return m.copyWith(lvl: m.lvl - 1);
+      }
+
+      return m;
+    }).toList();
+
+    emit(
+      FamilyLoaded(
+        members: updatedMembers,
+        familyName: current.familyName,
+        editingMemberUid: current.editingMemberUid,
+      ),
+    );
+  }
+
+  void _increaseCoins(IncreaseCoins event, Emitter<FamilyState> emit) {
+    if (state is! FamilyLoaded) return;
+
+    final current = state as FamilyLoaded;
+
+    final updatedMembers = current.members.map((m) {
+      if (m.uid == event.uid) {
+        return m.copyWith(coins: m.coins + 1);
+      }
+
+      return m;
+    }).toList();
+
+    emit(
+      FamilyLoaded(
+        members: updatedMembers,
+        familyName: current.familyName,
+        editingMemberUid: current.editingMemberUid,
+      ),
+    );
+  }
+
+  void _decreaseCoins(DecreaseCoins event, Emitter<FamilyState> emit) {
+    if (state is! FamilyLoaded) return;
+
+    final current = state as FamilyLoaded;
+
+    final updatedMembers = current.members.map((m) {
+      if (m.uid == event.uid && m.coins > 0) {
+        return m.copyWith(coins: m.coins - 1);
+      }
+
+      return m;
+    }).toList();
+
+    emit(
+      FamilyLoaded(
+        members: updatedMembers,
+        familyName: current.familyName,
+        editingMemberUid: current.editingMemberUid,
+      ),
+    );
   }
 
   Future<void> _loadFamily(LoadFamily event, Emitter<FamilyState> emit) async {
@@ -78,21 +185,19 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
     try {
       final currentState = state as FamilyLoaded;
 
-      // сохраняем изменения в Firestore
       await repository.updateMemberStats(
         event.updatedMember.uid,
         event.updatedMember.lvl,
         event.updatedMember.coins,
       );
 
-      // перезагружаем список участников группы
       final members = await repository.loadFamily(groupId!);
 
       emit(
         FamilyLoaded(
           members: members,
           familyName: currentState.familyName,
-          editingMember: null,
+          editingMemberUid: null,
         ),
       );
     } catch (e) {
@@ -113,7 +218,7 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
         FamilyLoaded(
           members: updatedMembers,
           familyName: currentState.familyName,
-          editingMember: null,
+          editingMemberUid: currentState.editingMemberUid,
         ),
       );
     }

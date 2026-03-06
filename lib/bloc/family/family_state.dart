@@ -9,12 +9,12 @@ class FamilyLoading extends FamilyState {}
 class FamilyLoaded extends FamilyState {
   final List<Member> members;
   final String familyName;
-  final String? editingMember;
+  final String? editingMemberUid;
 
   FamilyLoaded({
     required this.members,
     required this.familyName,
-    this.editingMember,
+    this.editingMemberUid,
   });
 }
 
