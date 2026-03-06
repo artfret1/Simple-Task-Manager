@@ -6,8 +6,11 @@ import 'package:task_manager/bloc/family/family_bloc.dart';
 void showFormDialog(BuildContext context) {
   showDialog(
     context: context,
-    builder: (context) {
-      return const _AddMemberDialog();
+    builder: (dialogContext) {
+      return BlocProvider.value(
+        value: context.read<FamilyBloc>(),
+        child: const _AddMemberDialog(),
+      );
     },
   );
 }

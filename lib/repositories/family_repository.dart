@@ -59,7 +59,9 @@ class FamilyRepository {
 
   Future<void> addMemberToGroup(String groupId, String uid) async {
     final groupRef = firestore.collection('groups').doc(groupId);
-
+    await groupRef.update({
+      'memberIds': FieldValue.arrayUnion([uid]),
+    });
     await groupRef.update({'members.$uid': 'member'});
   }
 
