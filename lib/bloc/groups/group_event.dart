@@ -5,10 +5,9 @@ abstract class GroupEvent {}
 class LoadGroups extends GroupEvent {}
 
 class AddGroup extends GroupEvent {
-  final String groupID;
   final String groupName;
 
-  AddGroup(this.groupID, this.groupName);
+  AddGroup(this.groupName);
 }
 
 class UpdateGroup extends GroupEvent {

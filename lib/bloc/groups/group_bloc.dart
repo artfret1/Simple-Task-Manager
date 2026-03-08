@@ -13,10 +13,13 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
   }
 
   Future<void> _onAddGroup(AddGroup event, Emitter<GroupState> emit) async {
-    if (state is GroupsLoaded) {
-      final currentState = state as GroupsLoaded;
-      final updatedGroups = [...currentState.groups];
-      emit(GroupsLoaded(groups: updatedGroups));
+    try {
+      await repository.addGroup(event.groupName);
+
+      final groups = await repository.getGroups();
+      emit(GroupsLoaded(groups: groups));
+    } catch (e) {
+      emit(GroupsError(e.toString()));
     }
   }
 

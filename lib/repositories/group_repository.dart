@@ -29,4 +29,14 @@ class GroupRepository {
       return Group(id: doc.id, name: doc['name'] ?? '', admin: adminUid);
     }).toList();
   }
+
+  Future<void> addGroup(String name) async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final currentUserId = currentUser?.uid;
+    FirebaseFirestore.instance.collection('groups').add(<String, dynamic>{
+      'name': name,
+      'memberIds': [currentUserId],
+      'members': {currentUserId: "admin"},
+    });
+  }
 }

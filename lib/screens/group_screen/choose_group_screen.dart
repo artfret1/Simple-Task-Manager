@@ -5,6 +5,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:task_manager/bloc/groups/group_bloc.dart';
 import 'package:task_manager/models/group.dart';
+import 'package:task_manager/widgets/add_group_dialog.dart';
 import 'package:task_manager/widgets/group_card.dart';
 import 'package:task_manager/screens/account/profile_screen.dart';
 import 'package:task_manager/screens/settings/settings_screen.dart';
@@ -88,9 +89,7 @@ class _ChooseGroupScreenState extends State<ChooseGroupScreen> {
         backgroundColor: Theme.of(
           context,
         ).floatingActionButtonTheme.backgroundColor,
-        onPressed: () {},
-
-        // onPressed: () => {context.read<GroupBloc>().add(AddGroup());},
+        onPressed: () => showGroupFormDialog(context),
         child: Icon(Icons.add, color: Colors.black),
       ),
     );

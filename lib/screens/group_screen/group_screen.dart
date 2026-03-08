@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:task_manager/bloc/family/family_bloc.dart';
-import 'package:task_manager/models/member.dart';
 import 'package:task_manager/repositories/family_repository.dart';
 import 'package:task_manager/widgets/add_member_dialog.dart';
 import 'package:task_manager/widgets/member_card.dart';
@@ -120,12 +119,6 @@ class _GroupView extends StatelessWidget {
 
         child: Icon(Icons.add, color: Colors.black),
       ),
-    );
-  }
-
-  void increaseLvl(BuildContext context, Member member) {
-    context.read<FamilyBloc>().add(
-      UpdateMember(member.copyWith(lvl: member.lvl + 1)),
     );
   }
 }
