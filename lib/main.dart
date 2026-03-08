@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:task_manager/auth/user_router.dart';
 import 'package:task_manager/bloc/auth/auth_bloc.dart';
-import 'package:task_manager/bloc/family/family_bloc.dart';
 import 'package:task_manager/bloc/groups/group_bloc.dart';
 import 'package:task_manager/repositories/family_repository.dart';
 import 'package:task_manager/repositories/group_repository.dart';

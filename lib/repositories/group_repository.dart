@@ -39,4 +39,9 @@ class GroupRepository {
       'members': {currentUserId: "admin"},
     });
   }
+
+  Future<void> renameGroup(String groupId, String newName) async {
+    final docRef = FirebaseFirestore.instance.collection('groups').doc(groupId);
+    docRef.update({'name': newName});
+  }
 }

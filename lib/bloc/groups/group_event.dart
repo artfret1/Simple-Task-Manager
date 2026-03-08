@@ -10,12 +10,11 @@ class AddGroup extends GroupEvent {
   AddGroup(this.groupName);
 }
 
-class UpdateGroup extends GroupEvent {
+class RenameGroup extends GroupEvent {
   final String groupID;
-  final String oldName;
   final String newName;
 
-  UpdateGroup(this.groupID, this.oldName, this.newName);
+  RenameGroup(this.groupID, this.newName);
 }
 
 class DeleteGroup extends GroupEvent {

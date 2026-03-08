@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:task_manager/models/group.dart';
+import 'package:task_manager/widgets/rename_group_dialog.dart';
 
 class GroupScreen extends StatelessWidget {
   final Group group;
@@ -56,17 +57,34 @@ class _GroupView extends StatelessWidget {
             ),
           ),
         ],
-        title: Center(
-          child: GestureDetector(
-            child: Row(
-              mainAxisAlignment: .center,
-              children: [
-                Text(group.name),
-                SizedBox(width: 5),
-                Icon(Icons.list, color: Colors.purple),
-              ],
-            ),
-            onTap: () => Get.to(ChooseGroupScreen()),
+        title: SizedBox(
+          width: .maxFinite,
+          child: Stack(
+            alignment: .center,
+            children: [
+              GestureDetector(
+                onTap: () => Get.to(ChooseGroupScreen()),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(group.name),
+                    SizedBox(width: 5),
+                    Icon(Icons.list, color: Colors.purple, size: 18),
+                  ],
+                ),
+              ),
+
+              isAdmin
+                  ? Positioned(
+                      right: MediaQuery.of(context).size.width / 2 + 10,
+                      child: GestureDetector(
+                        child: Icon(Icons.edit),
+                        onTap: () =>
+                            showRenameFormDialog(context, group.id, group.name),
+                      ),
+                    )
+                  : SizedBox(),
+            ],
           ),
         ),
         surfaceTintColor: Theme.of(context).appBarTheme.backgroundColor,
