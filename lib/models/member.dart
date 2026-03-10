@@ -1,22 +1,20 @@
 class Member {
   Member({
     required this.uid,
-    required this.lvl,
-    required this.coins,
     this.firstName,
     this.secondName,
     this.email,
     this.birthday,
     required this.name,
+    this.groups,
   });
   String uid;
-  int lvl;
-  int coins;
   String? firstName;
   String? secondName;
   String? email;
   String? birthday;
   String name;
+  Map<String, dynamic>? groups;
 
   String? get getName => firstName != null ? "$firstName $secondName" : null;
 
@@ -32,8 +30,6 @@ class Member {
     return Member(
       uid: uid ?? this.uid,
       name: name ?? this.name,
-      lvl: lvl ?? this.lvl,
-      coins: coins ?? this.coins,
       firstName: firstName ?? this.firstName,
       secondName: secondName ?? this.secondName,
       email: email ?? this.email,

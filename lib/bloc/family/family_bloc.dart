@@ -13,12 +13,7 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
   FamilyBloc(this.repository) : super(FamilyInitial()) {
     on<LoadFamily>(_loadFamily);
     on<AddMemberByUid>(_addMember);
-    on<UpdateMember>(_onUpdateMember);
     on<DeleteMember>(_onDeleteMember);
-    on<IncreaseLvl>(_increaseLvl);
-    on<DecreaseLvl>(_decreaseLvl);
-    on<IncreaseCoins>(_increaseCoins);
-    on<DecreaseCoins>(_decreaseCoins);
     on<SetEditingMember>(_setEditingMember);
   }
 
@@ -32,94 +27,6 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
         members: current.members,
         familyName: current.familyName,
         editingMemberUid: event.uid,
-      ),
-    );
-  }
-
-  void _increaseLvl(IncreaseLvl event, Emitter<FamilyState> emit) {
-    if (state is! FamilyLoaded) return;
-
-    final current = state as FamilyLoaded;
-
-    final updatedMembers = current.members.map((m) {
-      if (m.uid == event.uid) {
-        return m.copyWith(lvl: m.lvl + 1);
-      }
-
-      return m;
-    }).toList();
-
-    emit(
-      FamilyLoaded(
-        members: updatedMembers,
-        familyName: current.familyName,
-        editingMemberUid: current.editingMemberUid,
-      ),
-    );
-  }
-
-  void _decreaseLvl(DecreaseLvl event, Emitter<FamilyState> emit) {
-    if (state is! FamilyLoaded) return;
-
-    final current = state as FamilyLoaded;
-
-    final updatedMembers = current.members.map((m) {
-      if (m.uid == event.uid && m.lvl > 0) {
-        return m.copyWith(lvl: m.lvl - 1);
-      }
-
-      return m;
-    }).toList();
-
-    emit(
-      FamilyLoaded(
-        members: updatedMembers,
-        familyName: current.familyName,
-        editingMemberUid: current.editingMemberUid,
-      ),
-    );
-  }
-
-  void _increaseCoins(IncreaseCoins event, Emitter<FamilyState> emit) {
-    if (state is! FamilyLoaded) return;
-
-    final current = state as FamilyLoaded;
-
-    final updatedMembers = current.members.map((m) {
-      if (m.uid == event.uid) {
-        return m.copyWith(coins: m.coins + 1);
-      }
-
-      return m;
-    }).toList();
-
-    emit(
-      FamilyLoaded(
-        members: updatedMembers,
-        familyName: current.familyName,
-        editingMemberUid: current.editingMemberUid,
-      ),
-    );
-  }
-
-  void _decreaseCoins(DecreaseCoins event, Emitter<FamilyState> emit) {
-    if (state is! FamilyLoaded) return;
-
-    final current = state as FamilyLoaded;
-
-    final updatedMembers = current.members.map((m) {
-      if (m.uid == event.uid && m.coins > 0) {
-        return m.copyWith(coins: m.coins - 1);
-      }
-
-      return m;
-    }).toList();
-
-    emit(
-      FamilyLoaded(
-        members: updatedMembers,
-        familyName: current.familyName,
-        editingMemberUid: current.editingMemberUid,
       ),
     );
   }
@@ -171,35 +78,6 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
       final members = await repository.loadFamily(groupId!);
 
       emit(FamilyLoaded(members: members, familyName: "Группа"));
-    } catch (e) {
-      emit(FamilyError(e.toString()));
-    }
-  }
-
-  Future<void> _onUpdateMember(
-    UpdateMember event,
-    Emitter<FamilyState> emit,
-  ) async {
-    if (state is! FamilyLoaded) return;
-
-    try {
-      final currentState = state as FamilyLoaded;
-
-      await repository.updateMemberStats(
-        event.updatedMember.uid,
-        event.updatedMember.lvl,
-        event.updatedMember.coins,
-      );
-
-      final members = await repository.loadFamily(groupId!);
-
-      emit(
-        FamilyLoaded(
-          members: members,
-          familyName: currentState.familyName,
-          editingMemberUid: null,
-        ),
-      );
     } catch (e) {
       emit(FamilyError(e.toString()));
     }

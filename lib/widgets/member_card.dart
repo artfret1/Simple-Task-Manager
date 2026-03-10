@@ -3,12 +3,19 @@ import 'package:task_manager/bloc/family/family_bloc.dart';
 import 'package:task_manager/models/member.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task_manager/widgets/expandable_tasks.dart';
 
 class MemberCard extends StatefulWidget {
-  const MemberCard({super.key, required this.member, required this.isAdmin});
+  const MemberCard({
+    super.key,
+    required this.member,
+    required this.isAdmin,
+    required this.groupId,
+  });
 
   final Member member;
   final bool isAdmin;
+  final String groupId;
 
   @override
   State<MemberCard> createState() => _MemberCardState();
@@ -17,6 +24,11 @@ class MemberCard extends StatefulWidget {
 class _MemberCardState extends State<MemberCard> {
   @override
   Widget build(BuildContext context) {
+    final groupData =
+        widget.member.groups?[widget.groupId] as Map<String, dynamic>?;
+    final lvl = groupData?["lvl"] ?? 0;
+    final coins = groupData?["coins"] ?? 0;
+    final tasks = groupData?["tasks"] ?? [];
     return Card(
       color: const Color.fromARGB(255, 35, 61, 133),
       child: Padding(
@@ -47,9 +59,9 @@ class _MemberCardState extends State<MemberCard> {
                       GestureDetector(
                         onTap: () {
                           if (editing) {
-                            context.read<FamilyBloc>().add(
-                              UpdateMember(widget.member),
-                            );
+                            // context.read<FamilyBloc>().add(
+                            //   UpdateMember(widget.member),
+                            // );
                           } else {
                             context.read<FamilyBloc>().add(
                               SetEditingMember(widget.member.uid),
@@ -72,9 +84,9 @@ class _MemberCardState extends State<MemberCard> {
                     if (editing)
                       GestureDetector(
                         onTap: () {
-                          context.read<FamilyBloc>().add(
-                            DecreaseLvl(widget.member.uid),
-                          );
+                          // context.read<FamilyBloc>().add(
+                          //   DecreaseLvl(widget.member.uid),
+                          // );
                         },
                         child: const Icon(
                           Icons.remove_circle,
@@ -82,17 +94,14 @@ class _MemberCardState extends State<MemberCard> {
                         ),
                       ),
 
-                    Text(
-                      "Lvl: ${widget.member.lvl}",
-                      style: const TextStyle(fontSize: 20),
-                    ),
+                    Text("Lvl: $lvl", style: const TextStyle(fontSize: 20)),
 
                     if (editing)
                       GestureDetector(
                         onTap: () {
-                          context.read<FamilyBloc>().add(
-                            IncreaseLvl(widget.member.uid),
-                          );
+                          // context.read<FamilyBloc>().add(
+                          //   IncreaseLvl(widget.member.uid),
+                          // );
                         },
                         child: const Icon(
                           Icons.add_circle,
@@ -110,9 +119,9 @@ class _MemberCardState extends State<MemberCard> {
                     if (editing)
                       GestureDetector(
                         onTap: () {
-                          context.read<FamilyBloc>().add(
-                            DecreaseCoins(widget.member.uid),
-                          );
+                          // context.read<FamilyBloc>().add(
+                          //   DecreaseCoins(widget.member.uid),
+                          // );
                         },
                         child: const Icon(
                           Icons.remove_circle,
@@ -120,17 +129,14 @@ class _MemberCardState extends State<MemberCard> {
                         ),
                       ),
 
-                    Text(
-                      "Coins: ${widget.member.coins}",
-                      style: const TextStyle(fontSize: 20),
-                    ),
+                    Text("Coins: $coins", style: const TextStyle(fontSize: 20)),
 
                     if (editing)
                       GestureDetector(
                         onTap: () {
-                          context.read<FamilyBloc>().add(
-                            IncreaseCoins(widget.member.uid),
-                          );
+                          // context.read<FamilyBloc>().add(
+                          //   IncreaseCoins(widget.member.uid),
+                          // );
                         },
                         child: const Icon(
                           Icons.add_circle,
@@ -139,6 +145,7 @@ class _MemberCardState extends State<MemberCard> {
                       ),
                   ],
                 ),
+                ExpandableTasks(tasks: tasks),
               ],
             );
           },

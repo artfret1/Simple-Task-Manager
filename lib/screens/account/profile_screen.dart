@@ -87,8 +87,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             final Member initialMember = Member(
               uid: getUid(user),
-              lvl: 1,
-              coins: 0,
               name: getUsername(user),
               email: user?.email,
             );
@@ -133,20 +131,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _UidWidget(uid: getUid(user)),
 
                     const SizedBox(height: 10),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text(
-                          'Level: ${member.lvl}',
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                        Text(
-                          'Coins: ${member.coins}',
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                      ],
-                    ),
 
                     const SizedBox(height: 20),
 
@@ -395,7 +379,7 @@ String getUsername(User? user) {
 
 String getUid(User? user) => user?.uid ?? 'Not available';
 
-Future<Member> getDetails(uid, Member currentMember) async {
+Future<Member> getDetails(String uid, Member currentMember) async {
   DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
       .collection('users')
       .doc(uid)
@@ -403,8 +387,6 @@ Future<Member> getDetails(uid, Member currentMember) async {
 
   if (documentSnapshot.exists) {
     currentMember.name = documentSnapshot.get('name') ?? currentMember.name;
-    currentMember.lvl = documentSnapshot.get('lvl') ?? currentMember.lvl;
-    currentMember.coins = documentSnapshot.get('coins') ?? currentMember.coins;
     currentMember.firstName = documentSnapshot.get('first_name');
     currentMember.secondName = documentSnapshot.get('last_name');
     currentMember.email = documentSnapshot.get('email') ?? currentMember.email;

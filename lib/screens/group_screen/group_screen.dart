@@ -105,7 +105,7 @@ class _GroupView extends StatelessWidget {
 
             if (state is FamilyLoaded) {
               if (state.members.isEmpty) {
-                return Center(child: Text('Добавьте первого члена семьи'));
+                return Center(child: Text('Добавьте первого участинка'));
               }
 
               return Padding(
@@ -118,6 +118,7 @@ class _GroupView extends StatelessWidget {
                       key: ValueKey(member.uid),
                       member: member,
                       isAdmin: isAdmin,
+                      groupId: group.id,
                     );
                   },
                 ),

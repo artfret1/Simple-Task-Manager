@@ -21,16 +21,24 @@ class FamilyRepository {
 
       if (userDoc.exists) {
         final userData = userDoc.data()!;
-
+        // 1. Получаем QuerySnapshot подколлекции 'userstasks'
+        final userTasksSnapshot = await userDoc.reference
+            .collection('usersgroups')
+            .get();
+        // 2. Создаем Map для хранения данных подколлекции
+        final Map<String, dynamic> userTasksMap = {};
+        for (var taskDoc in userTasksSnapshot.docs) {
+          // 3. Ключ - ID документа, значение - данные документа
+          userTasksMap[taskDoc.id] = taskDoc.data();
+        }
         members.add(
           Member(
             uid: uid,
             name: userData['name'] ?? 'Unknown',
-            lvl: userData['lvl'] ?? 1,
-            coins: userData['coins'] ?? 0,
             firstName: userData['first_name'],
             secondName: userData['last_name'],
             email: userData['email'],
+            groups: userTasksMap,
           ),
         );
       }
@@ -49,8 +57,6 @@ class FamilyRepository {
     return Member(
       uid: uid,
       name: data['name'],
-      lvl: data['lvl'],
-      coins: data['coins'],
       firstName: data['first_name'],
       secondName: data['last_name'],
       email: data['email'],
