@@ -349,8 +349,6 @@ class _CreateScreenState extends State<CreateScreen> {
   void _createStoreDocument(User user) async {
     final data = {
       'name': user.email?.split('@').first ?? 'Unknown',
-      'lvl': 1,
-      'coins': 0,
       'email': user.email ?? 'Unknown email',
       if (_firstNameController.text.isNotEmpty)
         'first_name': _firstNameController.text,

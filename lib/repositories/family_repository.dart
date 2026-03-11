@@ -69,12 +69,27 @@ class FamilyRepository {
       'memberIds': FieldValue.arrayUnion([uid]),
     });
     await groupRef.update({'members.$uid': 'member'});
+
+    // Создаем документ в подколлекции 'usersgroups' для нового пользователя
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('usersgroups')
+        .doc(groupId)
+        .set(<String, dynamic>{'coins': 0, 'lvl': 1});
   }
 
-  Future<void> updateMemberStats(String uid, int lvl, int coins) async {
-    await firestore.collection('users').doc(uid).update({
-      'lvl': lvl,
-      'coins': coins,
-    });
+  Future<void> updateMemberStats(
+    String uid,
+    int lvl,
+    int coins,
+    String groupId,
+  ) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('usersgroups')
+        .doc(groupId)
+        .update(<String, dynamic>{'coins': coins, 'lvl': lvl});
   }
 }

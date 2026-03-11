@@ -13,7 +13,12 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
   FamilyBloc(this.repository) : super(FamilyInitial()) {
     on<LoadFamily>(_loadFamily);
     on<AddMemberByUid>(_addMember);
+    on<UpdateMember>(_onUpdateMember);
     on<DeleteMember>(_onDeleteMember);
+    on<IncreaseLvl>(_increaseLvl);
+    on<DecreaseLvl>(_decreaseLvl);
+    on<IncreaseCoins>(_increaseCoins);
+    on<DecreaseCoins>(_decreaseCoins);
     on<SetEditingMember>(_setEditingMember);
   }
 
@@ -22,11 +27,73 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
 
     final current = state as FamilyLoaded;
 
+    final member = current.members.firstWhere((m) => m.uid == event.uid);
+    final groupData = member.groups?[groupId] ?? {"lvl": 0, "coins": 0};
+
+    emit(
+      current.copyWith(
+        editingMemberUid: event.uid,
+        tempLvl: groupData["lvl"],
+        tempCoins: groupData["coins"],
+      ),
+    );
+  }
+
+  void _increaseLvl(IncreaseLvl event, Emitter<FamilyState> emit) {
+    if (state is! FamilyLoaded) return;
+
+    final current = state as FamilyLoaded;
+
+    emit(current.copyWith(tempLvl: (current.tempLvl ?? 0) + 1));
+  }
+
+  void _decreaseLvl(DecreaseLvl event, Emitter<FamilyState> emit) {
+    if (state is! FamilyLoaded) return;
+
+    final current = state as FamilyLoaded;
+    if ((current.tempLvl ?? 0) <= 0) return;
+
+    emit(current.copyWith(tempLvl: (current.tempLvl ?? 0) - 1));
+  }
+
+  void _increaseCoins(IncreaseCoins event, Emitter<FamilyState> emit) {
+    if (state is! FamilyLoaded) return;
+
+    final current = state as FamilyLoaded;
+    emit(current.copyWith(tempCoins: (current.tempCoins ?? 0) + 1));
+  }
+
+  void _decreaseCoins(DecreaseCoins event, Emitter<FamilyState> emit) {
+    if (state is! FamilyLoaded) return;
+
+    final current = state as FamilyLoaded;
+    if ((current.tempCoins ?? 0) <= 0) return;
+
+    emit(current.copyWith(tempCoins: (current.tempCoins ?? 0) - 1));
+  }
+
+  Future<void> _onUpdateMember(
+    UpdateMember event,
+    Emitter<FamilyState> emit,
+  ) async {
+    if (state is! FamilyLoaded) return;
+
+    final current = state as FamilyLoaded;
+
+    await repository.updateMemberStats(
+      event.uid,
+      current.tempLvl ?? 0,
+      current.tempCoins ?? 0,
+      event.groupId,
+    );
+
+    final members = await repository.loadFamily(groupId!);
+
     emit(
       FamilyLoaded(
-        members: current.members,
+        members: members,
         familyName: current.familyName,
-        editingMemberUid: event.uid,
+        editingMemberUid: null,
       ),
     );
   }

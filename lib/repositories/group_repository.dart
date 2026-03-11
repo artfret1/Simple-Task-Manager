@@ -33,11 +33,24 @@ class GroupRepository {
   Future<void> addGroup(String name) async {
     final currentUser = FirebaseAuth.instance.currentUser;
     final currentUserId = currentUser?.uid;
-    FirebaseFirestore.instance.collection('groups').add(<String, dynamic>{
-      'name': name,
-      'memberIds': [currentUserId],
-      'members': {currentUserId: "admin"},
-    });
+    DocumentReference groupRef = await FirebaseFirestore.instance
+        .collection('groups')
+        .add(<String, dynamic>{
+          'name': name,
+          'memberIds': [currentUserId],
+          'members': {currentUserId: "admin"},
+        });
+
+    // Получаем ID только что созданной группы
+    String newGroupId = groupRef.id;
+
+    // Создаем документ в подколлекции 'usersgroups' для текущего пользователя
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUserId)
+        .collection('usersgroups')
+        .doc(newGroupId)
+        .set(<String, dynamic>{'coins': 0, 'lvl': 1});
   }
 
   Future<void> renameGroup(String groupId, String newName) async {

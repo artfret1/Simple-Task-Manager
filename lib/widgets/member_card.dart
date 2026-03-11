@@ -26,8 +26,6 @@ class _MemberCardState extends State<MemberCard> {
   Widget build(BuildContext context) {
     final groupData =
         widget.member.groups?[widget.groupId] as Map<String, dynamic>?;
-    final lvl = groupData?["lvl"] ?? 0;
-    final coins = groupData?["coins"] ?? 0;
     final tasks = groupData?["tasks"] ?? [];
     return Card(
       color: const Color.fromARGB(255, 35, 61, 133),
@@ -38,6 +36,12 @@ class _MemberCardState extends State<MemberCard> {
             bool editing =
                 state is FamilyLoaded &&
                 state.editingMemberUid == widget.member.uid;
+            final lvl = editing
+                ? (state.tempLvl ?? 0)
+                : (groupData?["lvl"] ?? 0);
+            final coins = editing
+                ? (state.tempCoins ?? 0)
+                : (groupData?["coins"] ?? 0);
 
             return Column(
               children: [
@@ -59,9 +63,14 @@ class _MemberCardState extends State<MemberCard> {
                       GestureDetector(
                         onTap: () {
                           if (editing) {
-                            // context.read<FamilyBloc>().add(
-                            //   UpdateMember(widget.member),
-                            // );
+                            context.read<FamilyBloc>().add(
+                              UpdateMember(
+                                widget.member.uid,
+                                lvl,
+                                coins,
+                                widget.groupId,
+                              ),
+                            );
                           } else {
                             context.read<FamilyBloc>().add(
                               SetEditingMember(widget.member.uid),
@@ -84,9 +93,9 @@ class _MemberCardState extends State<MemberCard> {
                     if (editing)
                       GestureDetector(
                         onTap: () {
-                          // context.read<FamilyBloc>().add(
-                          //   DecreaseLvl(widget.member.uid),
-                          // );
+                          context.read<FamilyBloc>().add(
+                            DecreaseLvl(widget.member.uid, widget.groupId),
+                          );
                         },
                         child: const Icon(
                           Icons.remove_circle,
@@ -99,9 +108,9 @@ class _MemberCardState extends State<MemberCard> {
                     if (editing)
                       GestureDetector(
                         onTap: () {
-                          // context.read<FamilyBloc>().add(
-                          //   IncreaseLvl(widget.member.uid),
-                          // );
+                          context.read<FamilyBloc>().add(
+                            IncreaseLvl(widget.member.uid, widget.groupId),
+                          );
                         },
                         child: const Icon(
                           Icons.add_circle,
@@ -119,9 +128,9 @@ class _MemberCardState extends State<MemberCard> {
                     if (editing)
                       GestureDetector(
                         onTap: () {
-                          // context.read<FamilyBloc>().add(
-                          //   DecreaseCoins(widget.member.uid),
-                          // );
+                          context.read<FamilyBloc>().add(
+                            DecreaseCoins(widget.member.uid, widget.groupId),
+                          );
                         },
                         child: const Icon(
                           Icons.remove_circle,
@@ -134,9 +143,9 @@ class _MemberCardState extends State<MemberCard> {
                     if (editing)
                       GestureDetector(
                         onTap: () {
-                          // context.read<FamilyBloc>().add(
-                          //   IncreaseCoins(widget.member.uid),
-                          // );
+                          context.read<FamilyBloc>().add(
+                            IncreaseCoins(widget.member.uid, widget.groupId),
+                          );
                         },
                         child: const Icon(
                           Icons.add_circle,
