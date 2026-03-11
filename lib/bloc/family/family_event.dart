@@ -23,6 +23,22 @@ class AddMemberByUid extends FamilyEvent {
   AddMemberByUid(this.uid);
 }
 
+class AddTask extends FamilyEvent {
+  String uid;
+  String groupId;
+  String task;
+
+  AddTask(this.uid, this.groupId, this.task);
+}
+
+class RemoveTask extends FamilyEvent {
+  String uid;
+  String groupId;
+  String task;
+
+  RemoveTask(this.uid, this.groupId, this.task);
+}
+
 class IncreaseLvl extends FamilyEvent {
   final String uid;
   final String groupId;
@@ -42,6 +58,14 @@ class IncreaseCoins extends FamilyEvent {
   final String groupId;
 
   IncreaseCoins(this.uid, this.groupId);
+}
+
+class IncreaseManyCoins extends FamilyEvent {
+  final String uid;
+  final String groupId;
+  final int award;
+
+  IncreaseManyCoins(this.uid, this.groupId, this.award);
 }
 
 class DecreaseCoins extends FamilyEvent {

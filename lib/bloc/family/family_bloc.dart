@@ -20,6 +20,9 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
     on<IncreaseCoins>(_increaseCoins);
     on<DecreaseCoins>(_decreaseCoins);
     on<SetEditingMember>(_setEditingMember);
+    on<AddTask>(_addTask);
+    on<RemoveTask>(_removeTask);
+    on<IncreaseManyCoins>(_increaseManyCoins);
   }
 
   void _setEditingMember(SetEditingMember event, Emitter<FamilyState> emit) {
@@ -63,6 +66,13 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
     emit(current.copyWith(tempCoins: (current.tempCoins ?? 0) + 1));
   }
 
+  void _increaseManyCoins(IncreaseManyCoins event, Emitter<FamilyState> emit) {
+    if (state is! FamilyLoaded) return;
+
+    final current = state as FamilyLoaded;
+    emit(current.copyWith(tempCoins: (current.tempCoins ?? 0) + event.award));
+  }
+
   void _decreaseCoins(DecreaseCoins event, Emitter<FamilyState> emit) {
     if (state is! FamilyLoaded) return;
 
@@ -70,6 +80,36 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
     if ((current.tempCoins ?? 0) <= 0) return;
 
     emit(current.copyWith(tempCoins: (current.tempCoins ?? 0) - 1));
+  }
+
+  Future<void> _addTask(AddTask event, Emitter<FamilyState> emit) async {
+    if (state is! FamilyLoaded) return;
+
+    try {
+      await repository.addTask(event.uid, event.groupId, event.task);
+
+      // Загружаем актуальный список
+      final members = await repository.loadFamily(groupId!);
+
+      emit(FamilyLoaded(members: members, familyName: "Группа"));
+    } catch (e) {
+      emit(FamilyError(e.toString()));
+    }
+  }
+
+  Future<void> _removeTask(RemoveTask event, Emitter<FamilyState> emit) async {
+    if (state is! FamilyLoaded) return;
+
+    try {
+      await repository.removeTask(event.uid, event.groupId, event.task);
+
+      // Загружаем актуальный список
+      final members = await repository.loadFamily(groupId!);
+
+      emit(FamilyLoaded(members: members, familyName: "Группа"));
+    } catch (e) {
+      emit(FamilyError(e.toString()));
+    }
   }
 
   Future<void> _onUpdateMember(

@@ -1,9 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager/widgets/edit_task_dialog.dart';
 
 class ExpandableTasks extends StatefulWidget {
   final List<dynamic>? tasks;
+  final bool isAdmin;
+  final bool editing;
+  final String uid;
+  final String groupId;
 
-  const ExpandableTasks({super.key, required this.tasks});
+  const ExpandableTasks({
+    super.key,
+    required this.tasks,
+    required this.isAdmin,
+    required this.editing,
+    required this.uid,
+    required this.groupId,
+  });
 
   @override
   State<ExpandableTasks> createState() => _ExpandableTasksState();
@@ -19,35 +31,10 @@ class _ExpandableTasksState extends State<ExpandableTasks> {
     final tasks = widget.tasks;
 
     return Padding(
-      padding: const EdgeInsets.only(top: 20),
+      padding: const EdgeInsets.only(top: 5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // ——— Заголовок ———
-          if (tasks != null && tasks.isNotEmpty)
-            const Padding(
-              padding: EdgeInsets.only(bottom: 8),
-              child: Text(
-                "Задачи:",
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-
-          // ——— Нет задач ———
-          if (tasks == null || tasks.isEmpty)
-            Container(
-              height: collapsedHeight,
-              alignment: Alignment.center,
-              child: const Text(
-                "Нет задач",
-                style: TextStyle(color: Colors.white70, fontSize: 16),
-              ),
-            ),
-
           // ——— Список задач ———
           if (tasks != null && tasks.isNotEmpty)
             Column(
@@ -63,31 +50,39 @@ class _ExpandableTasksState extends State<ExpandableTasks> {
                         ? const BouncingScrollPhysics()
                         : const NeverScrollableScrollPhysics(),
                     child: Column(
-                      children: tasks.map((task) {
-                        return Container(
-                          width: double.infinity,
-                          margin: const EdgeInsets.only(bottom: 6),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 10,
+                      children: tasks.reversed.map((task) {
+                        return GestureDetector(
+                          onTap: () => showEditTaskDialog(
+                            context,
+                            widget.uid,
+                            widget.groupId,
+                            task,
                           ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            "$task",
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              height: 1.3,
-                              shadows: [
-                                Shadow(
-                                  color: Colors.black26,
-                                  offset: Offset(0, 1),
-                                  blurRadius: 2,
-                                ),
-                              ],
+                          child: Container(
+                            width: double.infinity,
+                            margin: const EdgeInsets.only(bottom: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              "$task",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                height: 1.3,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black26,
+                                    offset: Offset(0, 1),
+                                    blurRadius: 2,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         );

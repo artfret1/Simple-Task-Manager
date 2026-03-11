@@ -21,14 +21,11 @@ class FamilyRepository {
 
       if (userDoc.exists) {
         final userData = userDoc.data()!;
-        // 1. Получаем QuerySnapshot подколлекции 'userstasks'
         final userTasksSnapshot = await userDoc.reference
             .collection('usersgroups')
             .get();
-        // 2. Создаем Map для хранения данных подколлекции
         final Map<String, dynamic> userTasksMap = {};
         for (var taskDoc in userTasksSnapshot.docs) {
-          // 3. Ключ - ID документа, значение - данные документа
           userTasksMap[taskDoc.id] = taskDoc.data();
         }
         members.add(
@@ -91,5 +88,27 @@ class FamilyRepository {
         .collection('usersgroups')
         .doc(groupId)
         .update(<String, dynamic>{'coins': coins, 'lvl': lvl});
+  }
+
+  Future<void> addTask(String uid, String groupId, String task) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('usersgroups')
+        .doc(groupId)
+        .update({
+          'tasks': FieldValue.arrayUnion([task]),
+        });
+  }
+
+  Future<void> removeTask(String uid, String groupId, String task) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('usersgroups')
+        .doc(groupId)
+        .update({
+          "tasks": FieldValue.arrayRemove([task]),
+        });
   }
 }

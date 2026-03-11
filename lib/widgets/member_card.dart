@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:task_manager/bloc/family/family_bloc.dart';
 import 'package:task_manager/models/member.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task_manager/widgets/add_task_dialog.dart';
 import 'package:task_manager/widgets/expandable_tasks.dart';
 
 class MemberCard extends StatefulWidget {
@@ -22,6 +25,7 @@ class MemberCard extends StatefulWidget {
 }
 
 class _MemberCardState extends State<MemberCard> {
+  static const double collapsedHeight = 20;
   @override
   Widget build(BuildContext context) {
     final groupData =
@@ -154,7 +158,71 @@ class _MemberCardState extends State<MemberCard> {
                       ),
                   ],
                 ),
-                ExpandableTasks(tasks: tasks),
+
+                // ——— Заголовок ———
+                if (tasks != null && tasks.isNotEmpty)
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 8),
+                    child: Text(
+                      "Задачи:",
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+
+                // ——— Добавить задачу ———
+                (widget.isAdmin && editing)
+                    ? GestureDetector(
+                        onTap: () => showTaskDialog(
+                          context,
+                          widget.member.uid,
+                          widget.groupId,
+                        ),
+                        child: Row(
+                          mainAxisSize: .max,
+                          mainAxisAlignment: .center,
+                          children: [
+                            Text(
+                              "-----",
+                              style: TextStyle(
+                                color: Colors.green,
+                                letterSpacing: 2.0,
+                                fontSize: 20,
+                              ),
+                            ),
+                            Icon(Icons.add_circle, color: Colors.green),
+                            Text(
+                              "-----",
+                              style: TextStyle(
+                                color: Colors.green,
+                                letterSpacing: 2.0,
+                                fontSize: 20,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : SizedBox(),
+                // ——— Нет задач ———
+                if (tasks == null || tasks.isEmpty)
+                  Container(
+                    height: collapsedHeight,
+                    alignment: Alignment.center,
+                    child: const Text(
+                      "Нет задач",
+                      style: TextStyle(color: Colors.white70, fontSize: 16),
+                    ),
+                  ),
+                ExpandableTasks(
+                  tasks: tasks,
+                  isAdmin: widget.isAdmin,
+                  editing: editing,
+                  uid: widget.member.uid,
+                  groupId: widget.groupId,
+                ),
               ],
             );
           },
