@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:task_manager/auth/user_router.dart';
-import 'package:task_manager/bloc/auth/auth_bloc.dart';
-import 'package:task_manager/bloc/groups/group_bloc.dart';
-import 'package:task_manager/repositories/family_repository.dart';
-import 'package:task_manager/repositories/group_repository.dart';
-import 'package:task_manager/theme/theme_provider.dart';
+import 'package:task_manager/app/user_router.dart';
+import 'package:task_manager/features/auth/bloc/auth_bloc.dart';
+import 'package:task_manager/features/groups/bloc/group_bloc.dart';
+import 'package:task_manager/features/family/repository/family_repository.dart';
+import 'package:task_manager/features/groups/repository/group_repository.dart';
+import 'package:task_manager/app/theme/theme_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
