@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager/features/family/widgets/edit_task_dialog.dart';
+import 'edit_task_dialog.dart';
 
 class ExpandableTasks extends StatefulWidget {
   final List<dynamic>? tasks;

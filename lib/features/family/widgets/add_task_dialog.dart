@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:task_manager/features/family/bloc/family_bloc.dart';
+import '../bloc/family_bloc.dart';
 
+// Открывает диалог добавления задачи, передавая контекст участника и группы.
 void showTaskDialog(BuildContext context, String uid, String groupId) {
   showDialog(
     context: context,
     barrierColor: Colors.black.withOpacity(0.6),
     builder: (dialogContext) {
+      // Передаём уже созданный BLoC, чтобы не терять его состояние.
       return BlocProvider.value(
         value: context.read<FamilyBloc>(),
         child: _AddTaskDialog(uid: uid, groupId: groupId),
@@ -26,6 +28,7 @@ class _AddTaskDialog extends StatefulWidget {
 }
 
 class _AddTaskDialogState extends State<_AddTaskDialog> {
+  // Контроллер хранит текст новой задачи до момента отправки.
   final _taskCtrl = TextEditingController();
 
   @override
@@ -49,9 +52,11 @@ class _AddTaskDialogState extends State<_AddTaskDialog> {
             const SizedBox(height: 16),
 
             ElevatedButton(
+              // Кнопка неактивна, пока поле пустое.
               onPressed: _taskCtrl.text.trim().isEmpty
                   ? null
                   : () {
+                      // Передаём задачу в BLoC и закрываем диалог.
                       context.read<FamilyBloc>().add(
                         AddTask(
                           widget.uid,

@@ -1,16 +1,19 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:task_manager/features/family/models/member.dart';
-import 'package:task_manager/features/family/repository/family_repository.dart';
+import '../models/member.dart';
+import '../repository/family_repository.dart';
 
 part 'family_event.dart';
 part 'family_state.dart';
 
 class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
+  // Репозиторий отвечает за чтение/запись данных группы в хранилище.
   final FamilyRepository repository;
 
+  // Активная группа в контексте текущего экрана.
   String? groupId;
 
   FamilyBloc(this.repository) : super(FamilyInitial()) {
+    // Подключаем обработчики пользовательских действий и CRUD-операций.
     on<LoadFamily>(_loadFamily);
     on<AddMemberByUid>(_addMember);
     on<UpdateMember>(_onUpdateMember);
@@ -26,6 +29,7 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
   }
 
   void _setEditingMember(SetEditingMember event, Emitter<FamilyState> emit) {
+    // Редактирование доступно только после успешной загрузки состава группы.
     if (state is! FamilyLoaded) return;
 
     final current = state as FamilyLoaded;
@@ -43,6 +47,7 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
   }
 
   void _increaseLvl(IncreaseLvl event, Emitter<FamilyState> emit) {
+    // Изменяем временные значения локально до сохранения в репозиторий.
     if (state is! FamilyLoaded) return;
 
     final current = state as FamilyLoaded;
@@ -83,6 +88,7 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
   }
 
   Future<void> _addTask(AddTask event, Emitter<FamilyState> emit) async {
+    // После изменения задач перечитываем семейный список для консистентности UI.
     if (state is! FamilyLoaded) return;
 
     try {
@@ -116,6 +122,7 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
     UpdateMember event,
     Emitter<FamilyState> emit,
   ) async {
+    // Сохраняем отредактированные значения и закрываем режим редактирования.
     if (state is! FamilyLoaded) return;
 
     final current = state as FamilyLoaded;
@@ -140,6 +147,7 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
 
   Future<void> _loadFamily(LoadFamily event, Emitter<FamilyState> emit) async {
     try {
+      // Явно отражаем загрузку, чтобы экран мог показать прогресс.
       emit(FamilyLoading());
 
       groupId = event.groupId;
@@ -194,6 +202,7 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
     DeleteMember event,
     Emitter<FamilyState> emit,
   ) async {
+    // Локально удаляем участника из текущего состояния экрана.
     if (state is FamilyLoaded) {
       final currentState = state as FamilyLoaded;
       final updatedMembers = currentState.members

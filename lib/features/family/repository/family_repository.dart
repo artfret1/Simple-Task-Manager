@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:task_manager/features/family/models/member.dart';
+import '../models/member.dart';
 
 class FamilyRepository {
+  // Репозиторий инкапсулирует все операции с семейными данными в Firestore.
   final FirebaseFirestore firestore;
 
   FamilyRepository(this.firestore);
 
   Future<List<Member>> loadFamily(String groupId) async {
+    // Загружаем документ группы и список uid ее участников.
     final groupDoc = await firestore.collection('groups').doc(groupId).get();
 
     if (!groupDoc.exists) return [];
@@ -21,6 +23,7 @@ class FamilyRepository {
 
       if (userDoc.exists) {
         final userData = userDoc.data()!;
+        // Читаем данные пользователя по всем его группам/задачам.
         final userTasksSnapshot = await userDoc.reference
             .collection('usersgroups')
             .get();
@@ -45,6 +48,7 @@ class FamilyRepository {
   }
 
   Future<Member?> findUserByUid(String uid) async {
+    // Нужен для добавления участника в группу по его uid.
     final doc = await firestore.collection('users').doc(uid).get();
 
     if (!doc.exists) return null;
@@ -67,7 +71,7 @@ class FamilyRepository {
     });
     await groupRef.update({'members.$uid': 'member'});
 
-    // Создаем документ в подколлекции 'usersgroups' для нового пользователя
+    // Создаем стартовую запись участника в контексте конкретной группы.
     await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
@@ -82,6 +86,7 @@ class FamilyRepository {
     int coins,
     String groupId,
   ) async {
+    // Обновляем прогресс участника внутри выбранной группы.
     await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
@@ -91,6 +96,7 @@ class FamilyRepository {
   }
 
   Future<void> addTask(String uid, String groupId, String task) async {
+    // Добавляем новую задачу в массив задач участника.
     await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
@@ -102,6 +108,7 @@ class FamilyRepository {
   }
 
   Future<void> removeTask(String uid, String groupId, String task) async {
+    // Удаляем задачу из массива задач участника.
     await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)

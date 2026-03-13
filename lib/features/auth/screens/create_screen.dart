@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:task_manager/app/user_router.dart';
-import 'package:task_manager/features/auth/bloc/auth_bloc.dart';
+import '../../../app/user_router.dart';
+import '../bloc/auth_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,6 +25,7 @@ class _CreateScreenState extends State<CreateScreen> {
   DateTime? _selectedDate;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  // Коллекция профилей пользователей в Firestore.
   CollectionReference users = FirebaseFirestore.instance.collection('users');
 
   @override
@@ -38,6 +39,7 @@ class _CreateScreenState extends State<CreateScreen> {
   }
 
   void _selectDate(BuildContext context) async {
+    // Ограничиваем выбор даты только реальными прошедшими датами.
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -62,11 +64,12 @@ class _CreateScreenState extends State<CreateScreen> {
             BlocListener<AuthBloc, AuthState>(
               listener: (context, state) {
                 if (state is AuthInitial && state.user != null) {
-                  // Создание документа в FireStore
+                  // После успешной регистрации создаем профиль пользователя.
                   _createStoreDocument(state.user!);
                   Get.off(UserRouter());
                 }
                 if (state is AuthError) {
+                  // Любую ошибку авторизации показываем через snackbar.
                   ScaffoldMessenger.of(
                     context,
                   ).showSnackBar(SnackBar(content: Text(state.message)));
@@ -79,7 +82,7 @@ class _CreateScreenState extends State<CreateScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // EMAIL (Required)
+                // Обязательное поле: email.
                 _buildRequiredFieldLabel('Email'),
                 const SizedBox(height: 8),
                 TextFormField(
@@ -107,7 +110,7 @@ class _CreateScreenState extends State<CreateScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // PASSWORD (Required)
+                // Обязательное поле: пароль.
                 _buildRequiredFieldLabel('Password'),
                 const SizedBox(height: 8),
                 TextFormField(
@@ -129,6 +132,7 @@ class _CreateScreenState extends State<CreateScreen> {
                             : Icons.visibility,
                       ),
                       onPressed: () {
+                        // Переключаем отображение пароля для удобства ввода.
                         setState(() {
                           _obscurePassword = !_obscurePassword;
                         });
@@ -147,7 +151,7 @@ class _CreateScreenState extends State<CreateScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // CONFIRM PASSWORD (Required)
+                // Обязательное поле: подтверждение пароля.
                 _buildRequiredFieldLabel('Confirm Password'),
                 const SizedBox(height: 8),
                 TextFormField(
@@ -169,6 +173,7 @@ class _CreateScreenState extends State<CreateScreen> {
                             : Icons.visibility,
                       ),
                       onPressed: () {
+                        // Переключаем отображение подтверждения пароля.
                         setState(() {
                           _obscureConfirmPassword = !_obscureConfirmPassword;
                         });
@@ -187,7 +192,7 @@ class _CreateScreenState extends State<CreateScreen> {
                 ),
                 const SizedBox(height: 32),
 
-                // FIRST NAME (Optional)
+                // Необязательное поле: имя.
                 _buildOptionalFieldLabel('First Name'),
                 const SizedBox(height: 8),
                 TextFormField(
@@ -205,7 +210,7 @@ class _CreateScreenState extends State<CreateScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // LAST NAME (Optional)
+                // Необязательное поле: фамилия.
                 _buildOptionalFieldLabel('Last Name'),
                 const SizedBox(height: 8),
                 TextFormField(
@@ -223,7 +228,7 @@ class _CreateScreenState extends State<CreateScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // DATE OF BIRTH (Optional)
+                // Необязательное поле: дата рождения.
                 _buildOptionalFieldLabel('Date of Birth'),
                 const SizedBox(height: 8),
                 GestureDetector(
@@ -257,12 +262,13 @@ class _CreateScreenState extends State<CreateScreen> {
                 ),
                 const SizedBox(height: 32),
 
-                // CREATE ACCOUNT BUTTON
+                // Кнопка отправки формы регистрации.
                 SizedBox(
                   width: double.infinity,
                   height: 48,
                   child: ElevatedButton(
                     onPressed: () {
+                      // Запускаем регистрацию только после прохождения валидации.
                       if (_formKey.currentState!.validate()) {
                         _handleRegistration();
                       }
@@ -332,21 +338,26 @@ class _CreateScreenState extends State<CreateScreen> {
   }
 
   void _handleRegistration() {
+    // Подготавливаем данные перед отправкой в BLoC.
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
+    // Локальная проверка защищает от пустых запросов.
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in all fields')),
       );
       return;
     }
+
+    // Бизнес-логика регистрации остается в слое BLoC.
     context.read<AuthBloc>().add(
       AuthRegisterWithEmailRequested(email, password),
     );
   }
 
   void _createStoreDocument(User user) async {
+    // Формируем документ профиля: обязательные и опциональные поля.
     final data = {
       'name': user.email?.split('@').first ?? 'Unknown',
       'email': user.email ?? 'Unknown email',
@@ -366,6 +377,7 @@ class _CreateToLog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Ссылку на вход показываем только для анонимной сессии.
     return isAnonymous
         ? Center(
             child: GestureDetector(

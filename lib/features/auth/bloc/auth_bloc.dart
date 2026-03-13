@@ -5,9 +5,11 @@ part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  // BLoC координирует сценарии авторизации через FirebaseAuth.
   final FirebaseAuth _auth;
 
   AuthBloc(this._auth) : super(AuthInitial()) {
+    // Регистрируем обработчики основных auth-событий.
     on<AuthLoginRequested>(_onLoginAnonymously);
     on<AuthLoginWithEmailRequested>(_onLoginWithEmail);
     on<AuthRegisterWithEmailRequested>(_onRegisterWithEmail);
@@ -18,11 +20,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthLoginRequested event,
     Emitter<AuthState> emit,
   ) async {
+    // Единый паттерн: loading -> операция -> success/error.
     emit(AuthLoading());
     try {
       await _auth.signInAnonymously();
       emit(AuthInitial());
     } on FirebaseAuthException catch (e) {
+      // После ошибки возвращаемся в базовое состояние экрана.
       emit(AuthError(e.message ?? 'Login failed'));
       emit(AuthInitial());
     }
@@ -40,6 +44,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
       emit(AuthInitial());
     } on FirebaseAuthException {
+      // Текст ошибки упрощен для дружелюбного UX.
       emit(AuthError('Email or password is wrong'));
       emit(AuthInitial());
     }
@@ -57,6 +62,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
       emit(AuthInitial());
     } on FirebaseAuthException catch (e) {
+      // Пробрасываем системное сообщение, если оно доступно.
       emit(AuthError(e.message ?? 'Registration failed'));
       emit(AuthInitial());
     }
@@ -66,6 +72,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthLogoutRequested event,
     Emitter<AuthState> emit,
   ) async {
+    // Явно завершаем сессию и синхронизируем UI с исходным состоянием.
     await _auth.signOut();
     emit(AuthInitial());
   }

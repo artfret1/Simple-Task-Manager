@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:task_manager/features/family/bloc/family_bloc.dart';
+import '../bloc/family_bloc.dart';
 
+// Открывает диалог добавления участника, передавая в него уже существующий BLoC.
 void showFormDialog(BuildContext context) {
   showDialog(
     context: context,
@@ -25,6 +26,7 @@ class _AddMemberDialog extends StatefulWidget {
 
 class _AddMemberDialogState extends State<_AddMemberDialog> {
   final _uidController = TextEditingController();
+  // Флаги управляют видимостью одного из двух экранов поиска.
   bool _uidFinding = false;
   bool _nameFinding = false;
 
@@ -41,7 +43,7 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
             Text('Добавить участника', style: theme.textTheme.labelMedium),
             const SizedBox(height: 20),
 
-            // ПЕРВЫЙ ЭКРАН — выбор метода поиска
+            // Начальный шаг: пользователь выбирает способ поиска участника.
             if (!_uidFinding && !_nameFinding)
               Column(
                 children: [
@@ -70,7 +72,7 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
                 ],
               ),
 
-            // ------------------------- ПОИСК ПО UID -------------------------
+            // Поиск по UID: кнопка активна только при непустом поле.
             if (_uidFinding)
               Column(
                 children: [
@@ -90,6 +92,7 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
                     onPressed: _uidController.text.trim().isEmpty
                         ? null
                         : () {
+                            // Отправляем событие в BLoC и закрываем диалог.
                             context.read<FamilyBloc>().add(
                               AddMemberByUid(_uidController.text.trim()),
                             );
@@ -107,7 +110,7 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
                 ],
               ),
 
-            // ------------------------- ПОИСК ПО ИМЕНИ -------------------------
+            // Поиск по имени: функция пока недоступна.
             if (_nameFinding)
               Column(
                 children: [

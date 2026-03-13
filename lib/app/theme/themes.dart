@@ -3,7 +3,7 @@ import 'main_theme.dart';
 
 final nativeTheme = MainTheme(
   name: "native",
-  mainColor: const Color(0xFF1F2E56), // глубокий сине-графитовый
+  mainColor: const Color(0xFF1F2E56),
   optionalColor: Colors.white,
   textTheme: const TextTheme(
     bodyMedium: TextStyle(color: Colors.white, fontSize: 16),

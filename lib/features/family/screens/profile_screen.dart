@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:task_manager/app/user_router.dart';
-import 'package:task_manager/features/auth/bloc/auth_bloc.dart';
+import '../../../app/user_router.dart';
+import '../../auth/bloc/auth_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:task_manager/features/family/models/member.dart';
+import '../models/member.dart';
 import 'dart:ui';
 
 class ProfileScreen extends StatefulWidget {
@@ -18,6 +18,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  // Флаг переключает карточку профиля между режимом просмотра и редактирования.
   bool _editing = false;
 
   final _emailController = TextEditingController();
@@ -35,6 +36,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _saveProfileChanges(Member member) async {
+    // Обновляем в Firestore только те поля, которые действительно изменились.
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
@@ -99,12 +101,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 builder: (context, state) {
                   final user = FirebaseAuth.instance.currentUser;
 
+                  // Базовый объект из данных сессии — дополняется деталями из Firestore.
                   final Member initialMember = Member(
                     uid: getUid(user),
                     name: getUsername(user),
                     email: user?.email,
                   );
 
+                  // Загружаем расширенный профиль из Firestore асинхронно.
                   return FutureBuilder<Member>(
                     future: user != null
                         ? getDetails(user.uid, initialMember)
@@ -119,7 +123,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // ---------------- Avatar ----------------
+                          // Аватар с blur-эффектом для стеклянного UI.
                           ClipRRect(
                             borderRadius: BorderRadius.circular(80),
                             child: BackdropFilter(
@@ -149,7 +153,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           _UidWidget(uid: getUid(user)),
                           const SizedBox(height: 20),
 
-                          // ---------------- Profile Info ----------------
+                          // Блок с данными профиля — два режима: просмотр и редактирование.
                           Expanded(
                             child: Container(
                               padding: const EdgeInsets.all(16),
@@ -224,6 +228,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       ),
                                     ],
                                     const SizedBox(height: 24),
+                                    // Открываем редактирование, предзаполняя поля текущими значениями.
                                     !_editing
                                         ? GestureDetector(
                                             onTap: () {
@@ -328,6 +333,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // Единое поле ввода для всех строк формы редактирования профиля.
   Widget _buildTextField(
     String hint,
     TextEditingController controller, {
@@ -360,6 +366,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // Дата рождения выбирается через нативный date picker, а не вводится вручную.
   Future<void> _pickBirthday() async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -376,7 +383,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-// ---------------- sub-widgets -----------------------
+// ---- Вспомогательные виджеты ----
+
 class _UidWidget extends StatelessWidget {
   final String uid;
   const _UidWidget({required this.uid});
@@ -394,6 +402,7 @@ class _UidWidget extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
+        // Копируем uid в буфер обмена — удобно при ручном добавлении в группы.
         GestureDetector(
           onTap: () {
             Clipboard.setData(ClipboardData(text: uid));
@@ -417,6 +426,7 @@ class _LogoutButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // Для анонимного пользователя предлагаем создать аккаунт вместо выхода.
     return ElevatedButton(
       onPressed: () {
         context.read<AuthBloc>().add(AuthLogoutRequested());
@@ -449,6 +459,7 @@ String getUsername(User? user) {
 
 String getUid(User? user) => user?.uid ?? 'Not available';
 
+// Загружает расширенные данные профиля из Firestore и мержит их в существующий объект.
 Future<Member> getDetails(String uid, Member currentMember) async {
   DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
       .collection('users')

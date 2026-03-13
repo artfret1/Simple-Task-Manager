@@ -24,7 +24,7 @@ class MainTheme {
       scaffoldBackgroundColor: mainColor,
       textTheme: textTheme,
 
-      // ------------------------------- APP BAR
+      // APP BAR
       appBarTheme: AppBarTheme(
         backgroundColor: appBarColor,
         titleTextStyle: textTheme.labelMedium,
@@ -32,7 +32,7 @@ class MainTheme {
         elevation: 0,
       ),
 
-      // ------------------------------- CARDS
+      // CARDS
       cardTheme: CardThemeData(
         color: Colors.white.withOpacity(0.08),
         elevation: 8,
@@ -47,7 +47,7 @@ class MainTheme {
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       ),
 
-      // ------------------------------- POPUP DIALOG
+      // POPUP DIALOG
       dialogTheme: DialogThemeData(
         backgroundColor: Colors.black.withOpacity(0.65),
         surfaceTintColor: Colors.transparent,
@@ -63,7 +63,7 @@ class MainTheme {
 
       dialogBackgroundColor: Colors.black.withOpacity(0.4),
 
-      // ------------------------------- INPUT FIELDS
+      // INPUT FIELDS
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: Colors.white.withOpacity(0.08),
@@ -84,7 +84,7 @@ class MainTheme {
         ),
       ),
 
-      // ------------------------------- BUTTONS
+      // BUTTONS
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
           backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
@@ -106,7 +106,7 @@ class MainTheme {
         ),
       ),
 
-      // ------------------------------- FAB
+      // FAB
       floatingActionButtonTheme: floatingActionButton.copyWith(
         backgroundColor: Colors.blueAccent.withOpacity(0.25),
         foregroundColor: Colors.white,

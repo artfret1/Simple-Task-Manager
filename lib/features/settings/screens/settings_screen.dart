@@ -1,5 +1,5 @@
-import 'package:task_manager/app/theme/theme_provider.dart';
-import 'package:task_manager/app/theme/themes.dart';
+import '../../../app/theme/theme_provider.dart';
+import '../../../app/theme/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

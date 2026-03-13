@@ -1,9 +1,9 @@
-import 'package:task_manager/features/family/bloc/family_bloc.dart';
-import 'package:task_manager/features/family/models/member.dart';
+import '../bloc/family_bloc.dart';
+import '../models/member.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:task_manager/features/family/widgets/add_task_dialog.dart';
-import 'package:task_manager/features/family/widgets/expandable_tasks.dart';
+import 'add_task_dialog.dart';
+import 'expandable_tasks.dart';
 
 class MemberCard extends StatefulWidget {
   final Member member;
@@ -22,10 +22,12 @@ class MemberCard extends StatefulWidget {
 }
 
 class _MemberCardState extends State<MemberCard> {
+  // Флаг отображает спиннер на время асинхронного сохранения данных.
   bool saving = false;
 
   @override
   Widget build(BuildContext context) {
+    // Данные участника в контексте конкретной группы: уровень, монеты, задачи.
     final groupData =
         widget.member.groups?[widget.groupId] as Map<String, dynamic>?;
 
@@ -37,10 +39,12 @@ class _MemberCardState extends State<MemberCard> {
         padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 26),
         child: BlocBuilder<FamilyBloc, FamilyState>(
           builder: (context, state) {
+            // Режим редактирования активен, если этот участник выбран в BLoC.
             final editing =
                 state is FamilyLoaded &&
                 state.editingMemberUid == widget.member.uid;
 
+            // В режиме редактирования показываем временные значения из состояния.
             final lvl = editing
                 ? (state.tempLvl ?? 0)
                 : (groupData?["lvl"] ?? 0);
@@ -52,7 +56,7 @@ class _MemberCardState extends State<MemberCard> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // ---------------- NAME + EDIT ICON ----------------
+                // Имя участника и иконка редактирования/сохранения.
                 Row(
                   children: [
                     Expanded(
@@ -83,6 +87,7 @@ class _MemberCardState extends State<MemberCard> {
                               ),
                             );
 
+                            // Ждём, пока BLoC завершит сохранение и сбросит editingMemberUid.
                             await Future.doWhile(() async {
                               await Future.delayed(
                                 const Duration(milliseconds: 100),
@@ -118,7 +123,7 @@ class _MemberCardState extends State<MemberCard> {
 
                 const SizedBox(height: 16),
 
-                // ---------------- LEVEL ----------------
+                // Строка управления уровнем участника.
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -148,7 +153,7 @@ class _MemberCardState extends State<MemberCard> {
 
                 const SizedBox(height: 14),
 
-                // ---------------- COINS ----------------
+                // Строка управления монетами участника.
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -180,7 +185,7 @@ class _MemberCardState extends State<MemberCard> {
 
                 const SizedBox(height: 14),
 
-                // ---------------- TASKS HEADER ----------------
+                // Заголовок секции задач показывается только при наличии задач.
                 if (tasks != null && tasks.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 6),
@@ -194,7 +199,7 @@ class _MemberCardState extends State<MemberCard> {
                     ),
                   ),
 
-                // ---------------- ADD TASK ----------------
+                // Кнопка добавления задачи доступна только администратору в режиме редактирования.
                 if (editing && widget.isAdmin)
                   GestureDetector(
                     onTap: () => showTaskDialog(
@@ -216,7 +221,7 @@ class _MemberCardState extends State<MemberCard> {
 
                 if (tasks == null || tasks.isEmpty) const SizedBox(height: 8),
 
-                // ---------------- TASKS LIST ----------------
+                // Раскрываемый список задач участника.
                 ExpandableTasks(
                   tasks: tasks,
                   isAdmin: widget.isAdmin,

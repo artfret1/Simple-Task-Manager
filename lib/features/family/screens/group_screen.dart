@@ -1,16 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:task_manager/features/family/bloc/family_bloc.dart';
-import 'package:task_manager/features/family/repository/family_repository.dart';
-import 'package:task_manager/features/family/widgets/add_member_dialog.dart';
-import 'package:task_manager/features/family/widgets/member_card.dart';
-import 'package:task_manager/features/family/screens/profile_screen.dart';
-import 'package:task_manager/features/groups/screens/choose_group_screen.dart';
-import 'package:task_manager/features/groups/screens/rename_group_dialog.dart';
-import 'package:task_manager/features/settings/screens/settings_screen.dart';
+import '../bloc/family_bloc.dart';
+import '../repository/family_repository.dart';
+import '../widgets/add_member_dialog.dart';
+import '../widgets/member_card.dart';
+import 'profile_screen.dart';
+import '../../groups/screens/choose_group_screen.dart';
+import '../../groups/screens/rename_group_dialog.dart';
+import '../../settings/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:task_manager/features/groups/models/group.dart';
+import '../../groups/models/group.dart';
 
 class GroupScreen extends StatelessWidget {
   final Group group;
@@ -19,6 +19,7 @@ class GroupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Создаем BLoC и сразу запускаем загрузку участников текущей группы.
     return BlocProvider(
       create: (context) =>
           FamilyBloc(context.read<FamilyRepository>())
@@ -35,11 +36,13 @@ class _GroupView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currentUser = FirebaseAuth.instance.currentUser;
+    // Расширенные действия (переименование, управление) доступны только администратору.
     final isAdmin = currentUser?.uid == group.admin;
     final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
+        // Навигация в настройки и профиль вынесена в боковые иконки шапки.
         leading: IconButton(
           onPressed: () => Get.to(() => const SettingsScreen()),
           icon: Icon(Icons.settings, color: theme.appBarTheme.iconTheme?.color),
@@ -73,6 +76,7 @@ class _GroupView extends StatelessWidget {
                   ],
                 ),
               ),
+              // Кнопка переименования группы показывается только администратору.
               isAdmin
                   ? Positioned(
                       right: MediaQuery.of(context).size.width / 2 + 10,
@@ -95,11 +99,13 @@ class _GroupView extends StatelessWidget {
 
       body: BlocBuilder<FamilyBloc, FamilyState>(
         builder: (context, state) {
+          // Показываем индикатор загрузки пока данные группы поступают из Firestore.
           if (state is FamilyLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
           if (state is FamilyLoaded) {
+            // Пустое состояние — подсказка пользователю добавить первого участника.
             if (state.members.isEmpty) {
               return Center(
                 child: Text(
@@ -132,6 +138,7 @@ class _GroupView extends StatelessWidget {
       ),
 
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // FAB открывает диалог добавления нового участника в группу.
       floatingActionButton: FloatingActionButton(
         onPressed: () => showFormDialog(context),
         child: const Icon(Icons.add, color: Colors.blue),

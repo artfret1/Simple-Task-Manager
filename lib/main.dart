@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:task_manager/app/user_router.dart';
-import 'package:task_manager/features/auth/bloc/auth_bloc.dart';
-import 'package:task_manager/features/groups/bloc/group_bloc.dart';
-import 'package:task_manager/features/family/repository/family_repository.dart';
-import 'package:task_manager/features/groups/repository/group_repository.dart';
-import 'package:task_manager/app/theme/theme_provider.dart';
+import 'app/user_router.dart';
+import 'features/auth/bloc/auth_bloc.dart';
+import 'features/groups/bloc/group_bloc.dart';
+import 'features/family/repository/family_repository.dart';
+import 'features/groups/repository/group_repository.dart';
+import 'app/firebase_options.dart';
+import 'app/theme/theme_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -14,15 +15,7 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: FirebaseOptions(
-      apiKey: 'AIzaSyD07vYslhDno9fkcK95C2JslnOpx_erxBg',
-      appId: '1:426834336038:android:2793689ab2c92c2e0ac9e7',
-      messagingSenderId: '426834336038',
-      projectId: 'task-manager-d7b3c',
-      storageBucket: 'task-manager-d7b3c.firebasestorage.app',
-    ),
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   final firestore = FirebaseFirestore.instance;
 
